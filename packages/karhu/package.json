@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc"
   },
-  "license": "ISC",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
