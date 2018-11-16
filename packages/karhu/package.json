@@ -1,0 +1,21 @@
+{
+  "name": "@karhu/core",
+  "version": "0.1.0",
+  "description": "> TODO: description",
+  "author": "Oskar Hane <oh@oskarhane.com>",
+  "scripts": {
+    "build": "tsc"
+  },
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  }
+}

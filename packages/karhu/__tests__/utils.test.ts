@@ -1,6 +1,6 @@
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from './utils';
-import { Command, ClassifiedMatches, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from './types';
-import Karhu from './Karhu';
+import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from '../src/utils';
+import { Command, ClassifiedMatches, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
+import Karhu from '../src';
 
 describe('classifyMatches', () => {
   test('classifies matches', () => {

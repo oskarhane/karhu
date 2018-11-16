@@ -10,7 +10,7 @@ node_modules
 
 # production
 build
-lib
+packages/*/lib
 
 # misc
 .DS_Store
@@ -22,3 +22,6 @@ lib
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+lerna-debug.log
+npm-debug.log

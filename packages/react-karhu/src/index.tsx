@@ -1,6 +1,6 @@
 import React from 'react';
-import Karhu from '../../karhu/src/Karhu';
-import { Command, UnregisteredCommand, EntryGraph } from '../../karhu/src/types';
+import Karhu from '@karhu/core';
+import { Command, UnregisteredCommand, EntryGraph } from '@karhu/core/lib/types';
 
 const karhu = new Karhu();
 

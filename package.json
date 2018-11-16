@@ -1,6 +1,6 @@
 {
-  "name": "karhu",
-  "version": "1.0.0",
+  "name": "graph-app-kit",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.9",
     "jest": "^23.6.0",
     "lerna": "^3.4.3",
     "prettier": "^1.15.2",

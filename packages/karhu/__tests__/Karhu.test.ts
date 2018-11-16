@@ -1,5 +1,5 @@
-import Karhu from './Karhu';
-import { UnregisteredCommand, Command, EntryGraph, ActionsObject } from './types';
+import Karhu from '../src';
+import { UnregisteredCommand, Command, EntryGraph, ActionsObject } from '../src/types';
 
 describe('Karhu', () => {
   const karhu: Karhu = new Karhu();

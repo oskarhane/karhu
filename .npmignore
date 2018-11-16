@@ -2,3 +2,4 @@ tsconfig.json
 tslint.json
 .prettierrc
 jestconfig.json
+__tests__

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-testing-library';
-import Karhu from '../../karhu/src/Karhu';
-import { KarhuComponent, KarhuProvider, AddCommand } from './index';
+import Karhu from '@karhu/core';
+import { KarhuComponent, KarhuProvider, AddCommand } from '../src/index';
 
 test('renders children', () => {
   const karhu = new Karhu();
