@@ -4,7 +4,7 @@
   "description": "> TODO: description",
   "author": "Oskar Hane <oh@oskarhane.com>",
   "scripts": {
-    "build": "tsc"
+    "tsc": "tsc"
   },
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -18,5 +18,5 @@
   "publishConfig": {
     "registry": "http://registry.npmjs.org/"
   },
-  "gitHead": "60166db2dc3f1cf7a37e82f608fca8248e2806a6"
+  "gitHead": "ab21a77e751fbb7e8732a79f6215465a0fc420da"
 }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "tsc": "tsc",
     "format": "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\" \"packages/**/*.js\" \"packages/**/*.jsx\"",
     "lint": "tslint --project tsconfig.json",
     "test": "jest --no-cache --coverage --config jest.config.js",
