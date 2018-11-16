@@ -6,16 +6,23 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\" \"packages/**/*.js\" \"packages/**/*.jsx\"",
-    "lint": "tslint --project tsconfig.json"
+    "lint": "tslint --project tsconfig.json",
+    "test": "jest --no-cache --coverage --config jestconfig.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "jest": "^23.6.0",
     "lerna": "^3.4.3",
     "prettier": "^1.15.2",
-    "tslint": "^5.11.0",
+    "react-testing-library": "^5.2.3",
+    "ts-jest": "^23.10.4",
     "tslint-config-prettier": "^1.16.0",
     "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "tslint": "^5.11.0"
   }
 }

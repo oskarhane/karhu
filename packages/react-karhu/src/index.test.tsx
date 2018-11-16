@@ -1,7 +1,7 @@
 import React from 'react';
-import 'react-testing-library/cleanup-after-each';
+
 import { render } from 'react-testing-library';
-import Karhu from '../karhu/Karhu';
+import Karhu from '../../karhu/src/Karhu';
 import { KarhuComponent, KarhuProvider, AddCommand } from './index';
 
 test('renders children', () => {
@@ -30,7 +30,7 @@ test('updates matching command list when prop input changes', () => {
     actions: {
       onExec: jest.fn(),
     },
-    render: c => {
+    render: () => {
       return command1.name;
     },
   });
@@ -41,7 +41,7 @@ test('updates matching command list when prop input changes', () => {
     actions: {
       onExec: jest.fn(),
     },
-    render: c => {
+    render: () => {
       return command2.name;
     },
   });
@@ -51,7 +51,6 @@ test('updates matching command list when prop input changes', () => {
       {props.children}
     </div>
   );
-  let commandsListList = [];
   const tree = (props: any) => {
     return (
       <KarhuProvider value={karhu}>

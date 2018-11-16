@@ -18,6 +18,7 @@ describe('Karhu', () => {
       actions,
       name: 'hello',
       keywords: ['test word'],
+      render: () => '',
     };
 
     // When
@@ -40,24 +41,28 @@ describe('Karhu', () => {
       name: 'hello',
       keywords: ['open door', 'talk loud'],
       actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
     });
     const startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
     const containsMatch: Command = Karhu.createCommand({
       id: 'contains',
       name: 'hello',
       keywords: ['LOYO', 'my man'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
     const exactMatch: Command = Karhu.createCommand({
       id: 'exact',
       name: 'hello',
       keywords: ['LOYO', 'yo'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
 
     // When
@@ -82,12 +87,14 @@ describe('Karhu', () => {
       name: 'hello',
       keywords: ['open door', 'talk loud'],
       actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
     });
     let startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
 
     // When
@@ -117,12 +124,14 @@ describe('Karhu', () => {
       name: 'hello',
       keywords: ['LOYO', 'my man'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
     let startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
       actions: { onExec: jest.fn() },
+      render: () => '',
     });
 
     // When
@@ -159,12 +168,14 @@ describe('Karhu', () => {
       name: 'hello',
       keywords: ['open door', 'talk loud'],
       actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
     });
     let startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
       actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
     });
 
     // When
