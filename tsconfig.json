@@ -17,6 +17,7 @@
     "inlineSourceMap": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react"
+    "jsx": "react",
+    "esModuleInterop": true
   }
 }
