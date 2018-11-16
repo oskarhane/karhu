@@ -17,6 +17,6 @@
     "inlineSourceMap": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "jsx": "preserve"
+    "jsx": "react"
   }
 }

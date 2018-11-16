@@ -7,7 +7,7 @@
     "build": "tsc",
     "format": "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\" \"packages/**/*.js\" \"packages/**/*.jsx\"",
     "lint": "tslint --project tsconfig.json",
-    "test": "jest --no-cache --coverage --config jestconfig.json"
+    "test": "jest --no-cache --coverage --config jest.config.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,10 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
+    "@types/react": "^16.7.6",
+    "@types/react-dom": "^16.0.9",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
     "tslint": "^5.11.0"
   }
 }
