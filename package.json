@@ -8,7 +8,8 @@
     "format": "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\" \"packages/**/*.js\" \"packages/**/*.jsx\"",
     "lint": "tslint --project tsconfig.json",
     "test": "jest --no-cache --coverage --config jest.config.js",
-    "dev": "jest --no-cache --config jest.config.js --watch"
+    "dev": "jest --no-cache --config jest.config.js --watch",
+    "publish": "lerna run tsc && lerna publish"
   },
   "keywords": [],
   "author": "",
