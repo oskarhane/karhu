@@ -5,18 +5,14 @@ import {
   ClassifiedMatches,
   ClassifiedMatch,
   MatchClass,
-  EntryGraph
-} from "./types";
-import {
-  classifyMatches,
-  updateEntryGraph,
-  findCommandsInEntryGraph
-} from "./utils";
+  EntryGraph,
+} from './types';
+import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from './utils';
 
 export default class Karhu {
   static currentId: number = 0;
   commands: Command[] = [];
-  contexts: string[] = ["default"];
+  contexts: string[] = ['default'];
   entryGraph: EntryGraph = {};
   constructor() {
     this.reset();
@@ -25,7 +21,7 @@ export default class Karhu {
   reset(): void {
     Karhu.currentId = 0;
     this.commands = [];
-    this.contexts = ["default"];
+    this.contexts = ['default'];
     this.entryGraph = {};
   }
 
@@ -59,19 +55,11 @@ export default class Karhu {
     if (!input) {
       return [];
     }
-    let classifiedMatches: ClassifiedMatches = classifyMatches(
-      this.commands,
-      input
-    );
+    let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, input);
 
-    classifiedMatches = classifiedMatches.filter(
-      m => m.score !== MatchClass.NO
-    );
+    classifiedMatches = classifiedMatches.filter(m => m.score !== MatchClass.NO);
 
-    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(
-      this.entryGraph,
-      input
-    );
+    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, input);
     if (historyCommands.length) {
       classifiedMatches.unshift(...historyCommands);
     }
@@ -79,9 +67,7 @@ export default class Karhu {
     classifiedMatches.sort((a, b) => b.score - a.score);
     let sortedIds: string[] = classifiedMatches.map(m => m.id);
     sortedIds = sortedIds.filter((id, i) => sortedIds.indexOf(id) === i); // Remove duplicates
-    const commands = sortedIds.map(
-      id => this.commands.filter(c => c.id === id)[0]
-    );
+    const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]);
     commands.forEach(c => {
       if (c.actions.onShow) {
         c.actions.onShow(c.id);
@@ -126,12 +112,12 @@ export default class Karhu {
     }
     const id: string = command.id ? command.id : `command-${Karhu.currentId}`;
     const meta: CommandMetadata = {
-      calls: 0
+      calls: 0,
     };
     return {
       id,
       ...command,
-      meta
+      meta,
     };
   };
 }

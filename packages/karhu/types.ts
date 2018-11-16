@@ -22,7 +22,7 @@ export enum MatchClass {
   STARTS = 3,
   CONTAINS = 2,
   ACRONYM = 1,
-  NO = 0
+  NO = 0,
 }
 
 export type ClassifiedMatch = {

@@ -1,1 +1,1 @@
-import Karhu from './Karhu'
+import Karhu from './Karhu';

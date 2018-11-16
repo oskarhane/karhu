@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "format": "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\" \"packages/**/*.js\" \"packages/**/*.jsx\"",
+    "lint": "tslint --project tsconfig.json"
   },
   "keywords": [],
   "author": "",

@@ -1,16 +1,6 @@
-import {
-  Command,
-  ClassifiedMatches,
-  MatchClass,
-  ClassifiedMatch,
-  EntryGraph,
-  EntryGraphRecord
-} from "./types";
+import { Command, ClassifiedMatches, MatchClass, ClassifiedMatch, EntryGraph, EntryGraphRecord } from './types';
 
-export function classifyMatches(
-  commands: Command[],
-  input: string
-): ClassifiedMatches {
+export function classifyMatches(commands: Command[], input: string): ClassifiedMatches {
   const normInput = input.toLowerCase();
   const out: ClassifiedMatches = commands.map(c => {
     let bestMatch: ClassifiedMatch = noMatch(c.id);
@@ -48,34 +38,30 @@ export function classifyMatches(
 function noMatch(id: string): ClassifiedMatch {
   return {
     id,
-    score: MatchClass.NO
+    score: MatchClass.NO,
   };
 }
 function exactMatch(id: string): ClassifiedMatch {
   return {
     id,
-    score: MatchClass.EXACT
+    score: MatchClass.EXACT,
   };
 }
 function startsMatch(id: string): ClassifiedMatch {
   return {
     id,
-    score: MatchClass.STARTS
+    score: MatchClass.STARTS,
   };
 }
 function containsMatch(id: string): ClassifiedMatch {
   return {
     id,
-    score: MatchClass.CONTAINS
+    score: MatchClass.CONTAINS,
   };
 }
 
-export function updateEntryGraph(
-  initialGraph: EntryGraph,
-  input: string,
-  cmdId: string
-): EntryGraph {
-  const letters: string[] = input.split("");
+export function updateEntryGraph(initialGraph: EntryGraph, input: string, cmdId: string): EntryGraph {
+  const letters: string[] = input.split('');
   const graphClone: EntryGraph = { ...initialGraph };
   let traverseObj = graphClone;
   letters.forEach((letter, i) => {
@@ -84,7 +70,7 @@ export function updateEntryGraph(
     }
     traverseObj = traverseObj[letter];
     if (i === letters.length - 1) {
-      if (!traverseObj.hasOwnProperty("commands")) {
+      if (!traverseObj.hasOwnProperty('commands')) {
         traverseObj.commands = [{ id: cmdId, calls: 1 }];
       } else {
         const idMap = traverseObj.commands.map((c: EntryGraphRecord) => c.id);
@@ -100,11 +86,8 @@ export function updateEntryGraph(
   return graphClone;
 }
 
-export function findCommandsInEntryGraph(
-  graph: EntryGraph,
-  input: string
-): ClassifiedMatch[] {
-  const letters: string[] = input.split("");
+export function findCommandsInEntryGraph(graph: EntryGraph, input: string): ClassifiedMatch[] {
+  const letters: string[] = input.split('');
   let traverseObj = graph;
   for (let i = 0; i < letters.length; i += 1) {
     if (!traverseObj[letters[i]]) {
@@ -112,11 +95,11 @@ export function findCommandsInEntryGraph(
     }
     traverseObj = traverseObj[letters[i]];
   }
-  if (traverseObj.hasOwnProperty("commands")) {
-    return traverseObj["commands"].map((cmd: EntryGraphRecord) => {
+  if (traverseObj.hasOwnProperty('commands')) {
+    return traverseObj['commands'].map((cmd: EntryGraphRecord) => {
       return {
         id: cmd.id,
-        score: MatchClass.HISTORY + cmd.calls
+        score: MatchClass.HISTORY + cmd.calls,
       };
     });
   }

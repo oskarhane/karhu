@@ -1,6 +1,6 @@
-import React from "react";
-import Karhu from "../karhu/Karhu";
-import { Command, UnregisteredCommand, EntryGraph } from "../karhu/types";
+import React from 'react';
+import Karhu from '../karhu/Karhu';
+import { Command, UnregisteredCommand, EntryGraph } from '../karhu/types';
 
 const karhu = new Karhu();
 
@@ -34,7 +34,7 @@ export class KarhuComponent extends React.Component<Props> {
   karhu?: Karhu;
   exec = (id: string) => {
     if (!this.karhu) {
-      throw new Error("Karhu not found");
+      throw new Error('Karhu not found');
     }
     const tree: EntryGraph = this.karhu.runCommand(id, this.props.input);
     return tree;
@@ -46,9 +46,7 @@ export class KarhuComponent extends React.Component<Props> {
       <Consumer>
         {(karhu: Karhu) => {
           this.karhu = karhu;
-          const commandsList = this.karhu.findMatchingCommands(
-            this.props.input
-          );
+          const commandsList = this.karhu.findMatchingCommands(this.props.input);
           return children({ commandsList, exec });
         }}
       </Consumer>
