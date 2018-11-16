@@ -1,0 +1,1 @@
+import Karhu from './Karhu'
