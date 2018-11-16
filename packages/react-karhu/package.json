@@ -1,6 +1,6 @@
 {
   "name": "@karhu/react",
-  "version": "0.1.2-alpha.0",
+  "version": "0.1.3-alpha.0",
   "description": "> TODO: description",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,7 +11,7 @@
   "author": "Oskar Hane <oh@oskarhane.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@karhu/core": "^0.1.2-alpha.0",
+    "@karhu/core": "^0.1.3-alpha.0",
     "@types/react": "^16.7.6",
     "@types/react-dom": "^16.0.9",
     "react": "^16.6.3",
