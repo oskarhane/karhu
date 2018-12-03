@@ -1,7 +1,6 @@
 module.exports = {
   clearMocks: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'clover'],
   coverageThreshold: {
     global: {
       branches: 60,
@@ -19,7 +18,8 @@ module.exports = {
   notify: false,
   notifyMode: 'always',
   roots: ['<rootDir>packages'],
-  testMatch: ['**/__tests__/*.+(ts|tsx|js)', '**/*.test.+(ts|tsx|js)'],
+  testMatch: ['**/__tests__/*.+(ts|tsx|js)'],
+  collectCoverageFrom: ['**/src/**/*.js', '**/src/**/*.ts', '**/src/**/*.tsx'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
