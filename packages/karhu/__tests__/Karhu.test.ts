@@ -45,6 +45,49 @@ describe('Karhu', () => {
     // Then
     expect(karhu.getCommands()).toHaveLength(0);
   });
+  test('addCommand overwrites commands if the id exists', () => {
+    // Given
+    const id: string = 'my-id';
+    const actions: ActionsObject = { onExec: jest.fn() };
+    const otherCommand: UnregisteredCommand = {
+      id: 'otherID',
+      actions,
+      name: 'hello',
+      keywords: ['test word'],
+      render: () => '',
+    };
+    const command: UnregisteredCommand = {
+      id,
+      actions,
+      name: 'hello',
+      keywords: ['test word'],
+      render: () => '',
+    };
+    const command2: UnregisteredCommand = {
+      id,
+      actions,
+      name: 'hello2',
+      keywords: ['test word'],
+      render: () => '',
+    };
+
+    // When
+    karhu.addCommand(otherCommand);
+    karhu.addCommand(command);
+
+    // Then
+    let commands = karhu.getCommands();
+    expect(commands).toHaveLength(2);
+    expect(commands[1].name).toEqual('hello');
+
+    // When
+    karhu.addCommand(command2);
+
+    // Then
+    commands = karhu.getCommands();
+    expect(commands).toHaveLength(2);
+    expect(commands[1].name).toEqual('hello2');
+  });
   test('findMatchingCommands doesnt crash if no input', () => {
     // Given
 

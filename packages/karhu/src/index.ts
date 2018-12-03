@@ -27,22 +27,20 @@ export default class Karhu {
 
   addCommand(command: UnregisteredCommand): Command {
     const preparedCommand: Command = this._prepareCommand(command);
-    this.commands.push(preparedCommand);
-    return preparedCommand;
-  }
-  updateCommand(id: string) {
-    return (command: Command): Command => {
-      let merged: Command = command;
-      this.commands.map(c => {
-        if (c.id === id) {
-          merged = { ...c, ...command };
-          return merged;
+    const idExists: boolean = this.commands.filter(c => c.id === preparedCommand.id).length > 0;
+    if (!idExists) {
+      this.commands.push(preparedCommand);
+    } else {
+      this.commands = this.commands.map(c => {
+        if (c.id === preparedCommand.id) {
+          return preparedCommand;
         }
         return c;
       });
-      return merged;
-    };
+    }
+    return preparedCommand;
   }
+
   removeCommand(commandId: string) {
     this.commands = this.commands.filter(c => c.id !== commandId);
   }
