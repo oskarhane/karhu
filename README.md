@@ -8,6 +8,8 @@
 
 ---
 
+[![Build Status][build-badge]][build]
+
 ## Productivity tool for web applications
 
 Karhu is a productivity tool for rich web applications. Think of it as macOS's Spotlight or [Alfred App](https://www.alfredapp.com) for your web applications.
@@ -40,3 +42,6 @@ must add their own commands for Karhu to be useful.
 Example UI with a cosy bear on top of a default React app.
 
 ![bear](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/k2-Eh1xwaA1JP/k2.gif)
+
+[build-badge]: https://img.shields.io/travis/oskarhane/karhu.svg?style=flat-square
+[build]: https://travis-ci.org/oskarhane/karhu

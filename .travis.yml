@@ -6,7 +6,7 @@ cache:
 notifications:
   email: false
 node_js: '8'
-install: npm install
-script: npm test
+install: cd packages/karhu && npm install; cd ../react-karhu && npm install; cd ../../
+script: npm run verify
 branches:
   only: master
