@@ -14,8 +14,11 @@ export default class Karhu {
   commands: Command[] = [];
   contexts: string[] = ['default'];
   entryGraph: EntryGraph = {};
-  constructor() {
+  constructor(entryGraph?: EntryGraph) {
     this.reset();
+    if (entryGraph) {
+      this.entryGraph = entryGraph;
+    }
   }
 
   reset(): void {
@@ -47,6 +50,10 @@ export default class Karhu {
 
   getCommands(): Command[] {
     return this.commands;
+  }
+
+  getEntryGraph(): EntryGraph {
+    return this.entryGraph;
   }
 
   findMatchingCommands(input?: string): Command[] {

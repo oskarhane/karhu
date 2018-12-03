@@ -264,4 +264,20 @@ describe('Karhu', () => {
     expect(startsMatch.actions.onExec).toHaveBeenCalledTimes(0);
     expect(startsMatch.meta.calls).toEqual(0);
   });
+  test('provided entry graph is used', () => {
+    // Given
+    const initialEntryGraph: EntryGraph = {
+      s: {
+        commands: [{ id: 'test-id', calls: 1 }],
+      },
+    };
+
+    // When
+    const hasInitial: Karhu = new Karhu(initialEntryGraph);
+    const noInitial: Karhu = new Karhu();
+
+    // Then
+    expect(hasInitial.getEntryGraph()).toEqual(initialEntryGraph);
+    expect(noInitial.getEntryGraph()).toEqual({});
+  });
 });
