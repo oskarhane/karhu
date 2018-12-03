@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import Karhu from '@karhu/core';
 import { KarhuComponent, KarhuProvider, AddCommand } from '../src/index';
+import { EntryGraph } from '@karhu/core/src/types';
 
 test('renders children', () => {
   const karhu = new Karhu();
@@ -114,4 +115,40 @@ test('updates matching command list when prop input changes', () => {
   expect(queryByTestId('command-list-item')).toBeNull();
   expect(queryByText('first-command')).toBeNull();
   expect(queryByText('second-command')).toBeNull();
+});
+
+test('exec returns the entry graph', () => {
+  // Given
+  const karhu = new Karhu();
+  const commandId: string = 'c1';
+  const command1 = Karhu.createCommand({
+    id: commandId,
+    name: 'first-command',
+    keywords: ['first command'],
+    actions: {
+      onExec: jest.fn(),
+    },
+    render: () => {
+      return command1.name;
+    },
+  });
+  const MyComp = <h1>hello</h1>;
+  let execFn: any = null;
+
+  // When
+  render(
+    <KarhuProvider value={karhu}>
+      <AddCommand command={command1} />
+      <KarhuComponent input="f">
+        {({ exec }) => {
+          execFn = exec;
+          return MyComp;
+        }}
+      </KarhuComponent>
+    </KarhuProvider>,
+  );
+  const eg: EntryGraph = execFn(commandId);
+
+  // Then
+  expect(eg).toEqual({ f: { commands: [{ calls: 1, id: 'c1' }] } });
 });
