@@ -1,6 +1,18 @@
-# `react-karhu`
+# `@karhu/react`
 
-React bindings and components for Karhu.
+React bindings and components for Karhu. Expects `@karhu/core` to be there.
+
+## Install
+
+```bash
+npm install @karhu/core @karhu/react
+```
+
+## Usage
+
+```js
+import { KarhuProvider, KarhuComponent, AddCommand } from '@karhu/react';
+```
 
 ## Components
 
