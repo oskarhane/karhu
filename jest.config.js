@@ -16,7 +16,7 @@ module.exports = {
     },
   },
   moduleFileExtensions: ['ts', 'tsx', 'js'],
-  notify: true,
+  notify: false,
   notifyMode: 'always',
   roots: ['<rootDir>packages'],
   testMatch: ['**/__tests__/*.+(ts|tsx|js)', '**/*.test.+(ts|tsx|js)'],
