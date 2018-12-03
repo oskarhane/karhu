@@ -9,6 +9,18 @@ describe('Karhu', () => {
   test('instance is defined', () => {
     expect(karhu).toBeDefined();
   });
+  test('createCommand generates id if not provided', () => {
+    // When
+    let myCommand: Command = Karhu.createCommand({
+      name: 'test',
+      keywords: ['test'],
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+
+    // Then
+    expect(myCommand.id).toMatch(/^command-[0-9]+$/);
+  });
   test('can add and remove commands', () => {
     // Given
     const id: string = 'my-id';
@@ -32,6 +44,15 @@ describe('Karhu', () => {
 
     // Then
     expect(karhu.getCommands()).toHaveLength(0);
+  });
+  test('findMatchingCommands doesnt crash if no input', () => {
+    // Given
+
+    // When
+    const res: Command[] = karhu.findMatchingCommands();
+
+    // Then
+    expect(res).toEqual([]);
   });
   test('findMatchingCommands finds and initially sorts matching commands', () => {
     // Given
@@ -77,6 +98,16 @@ describe('Karhu', () => {
     expect(res[0].id).toEqual(exactMatch.id);
     expect(res[1].id).toEqual(startsMatch.id);
     expect(res[2].id).toEqual(containsMatch.id);
+  });
+  test('runCommand returns if command not found', () => {
+    const id: string = 'non-existent';
+    const input: string = 'test';
+
+    // When
+    const res: EntryGraph = karhu.runCommand(id, input);
+
+    // Then
+    expect(res).toEqual({});
   });
   test('runCommand run the command and return the entryGraph', () => {
     // Given
