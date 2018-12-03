@@ -1,12 +1,13 @@
 sudo: false
 language: node_js
-cache:
-  directories:
-    - ~/.npm
+node_js:
+  - node
+  - lts/*
+cache: npm
 notifications:
   email: false
-node_js: '8'
-install: cd packages/karhu && npm install; cd ../react-karhu && npm install; cd ../../
+node_js: 'lts/*'
+install: npm install && lerna bootstrap
 script: npm run verify
 branches:
   only: master
