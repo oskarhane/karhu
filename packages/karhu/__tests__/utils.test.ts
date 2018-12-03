@@ -151,6 +151,15 @@ describe('entryGraph', () => {
     // Then
     expect(graph2).toHaveProperty(['b', 'l', 'o', 'o', 'm', 'commands', 0, 'id'], commandId);
     expect(graph2).toHaveProperty(['b', 'l', 'o', 'o', 'm', 'commands', 0, 'calls'], 2);
+
+    // When
+    // Call bloom on just 'b' input
+    const graph3: EntryGraph = updateEntryGraph(graph2, 'b', commandId);
+
+    // Then
+    expect(graph3).toHaveProperty(['b', 'commands', 0, 'id'], initialCmdId2); // Make sure the old one is there
+    expect(graph3).toHaveProperty(['b', 'commands', 1, 'id'], commandId);
+    expect(graph3).toHaveProperty(['b', 'commands', 1, 'calls'], 1);
   });
   test('findCommandsInEntryGraph traverses the graph and return empty if no commands', () => {
     // Given
