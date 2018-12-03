@@ -59,6 +59,29 @@ describe('classifyMatches', () => {
       score: MatchClass.EXACT,
     });
   });
+  it('returns fast if input is longer than keyword', () => {
+    // Given
+    const input: string = 'xx';
+    const xMatch: Command = Karhu.createCommand({
+      id: 'no',
+      name: 'hello',
+      keywords: ['x'],
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+
+    const commands: Command[] = [xMatch];
+
+    // When
+    const res: ClassifiedMatches = classifyMatches(commands, input);
+
+    // Then
+    expect(res).toHaveLength(1);
+    expect(res[0]).toEqual({
+      id: 'no',
+      score: MatchClass.NO,
+    });
+  });
 });
 
 describe('entryGraph', () => {
