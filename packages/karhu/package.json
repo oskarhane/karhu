@@ -1,7 +1,7 @@
 {
   "name": "@karhu/core",
   "version": "0.1.3-alpha.0",
-  "description": "> TODO: description",
+  "description": "Core package for Karhu, the lib for powering web app productivity tools",
   "author": "Oskar Hane <oh@oskarhane.com>",
   "scripts": {
     "tsc": "tsc"
