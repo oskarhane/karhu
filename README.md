@@ -2,9 +2,20 @@
   🐻 Karhu 🐻
 </h1>
 
+<p align="center" style="font-size: 1.2rem;">
+* Fast searches * Learns over time * Familiar concept *
+</p>
+
+---
+
 ## Productivity tool for web applications
 
 Karhu is a productivity tool for rich web applications. Think of it as macOS's Spotlight or [Alfred App](https://www.alfredapp.com) for your web applications.
+
+Your applicaiton registers commands and Karhu takes care of listing them for user searches and executes them when the user wants to.
+
+Karhu also learns the users habit over time and lists commonly executed
+commands higher for the user inputs.
 
 Example implementations will be added to this repo in the future.
 
