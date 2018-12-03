@@ -7,7 +7,7 @@ cache: npm
 notifications:
   email: false
 node_js: 'lts/*'
-install: npm install && lerna bootstrap
+install: npm install && lerna bootstrap && lerna run tsc
 script: npm run verify
 branches:
   only: master
