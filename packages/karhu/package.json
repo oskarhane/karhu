@@ -4,7 +4,9 @@
   "description": "Core package for Karhu, the lib for powering web app productivity tools",
   "author": "Oskar Hane <oh@oskarhane.com>",
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
+    "prepublishOnly": "npm run preparePublish"
   },
   "license": "Apache-2.0",
   "main": "lib/index.js",

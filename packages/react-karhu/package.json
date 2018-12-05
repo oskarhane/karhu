@@ -5,7 +5,9 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
+    "prepublishOnly": "npm run preparePublish"
   },
   "keywords": [],
   "author": "Oskar Hane <oh@oskarhane.com>",
