@@ -1,87 +1,95 @@
 import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from '../src/utils';
-import { Command, ClassifiedMatches, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
+import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
 import Karhu from '../src';
 
 describe('classifyMatches', () => {
   test('classifies matches', () => {
     // Given
     const input: string = 'yo';
-    const noMatch: Command = Karhu.createCommand({
-      id: 'no',
-      name: 'hello',
-      keywords: ['open door', 'talk loud'],
-      actions: { onExec: jest.fn() },
-      render: () => '',
-    });
-    const startsMatch: Command = Karhu.createCommand({
-      id: 'starts',
-      name: 'hello',
-      keywords: ['YOLO', 'my man'],
-      actions: { onExec: jest.fn() },
-      render: () => '',
-    });
-    const containsMatch: Command = Karhu.createCommand({
-      id: 'contains',
-      name: 'hello',
-      keywords: ['LOYO', 'my man'],
-      actions: { onExec: jest.fn() },
-      render: () => '',
-    });
-    const exactMatch: Command = Karhu.createCommand({
-      id: 'exact',
-      name: 'hello',
-      keywords: ['LOYO', 'yo'],
-      actions: { onExec: jest.fn() },
-      render: () => '',
-    });
+    const noMatch = createCommandWithKeywords(['open door', 'talk loud']);
+    const startsMatch = createCommandWithKeywords(['YOLO', 'my man']);
+    const containsMatch = createCommandWithKeywords(['LOYO', 'my man']);
+    const exactMatch = createCommandWithKeywords(['LOYO', 'yo']);
 
-    const commands: Command[] = [noMatch, startsMatch, containsMatch, exactMatch];
+    const commands = [noMatch, startsMatch, containsMatch, exactMatch];
 
     // When
-    const res: ClassifiedMatches = classifyMatches(commands, input);
+    const res = classifyMatches(commands, input);
 
     // Then
     expect(res).toHaveLength(4);
     expect(res[0]).toEqual({
-      id: 'no',
+      id: noMatch.id,
       score: MatchClass.NO,
     });
     expect(res[1]).toEqual({
-      id: 'starts',
+      id: startsMatch.id,
       score: MatchClass.STARTS,
     });
     expect(res[2]).toEqual({
-      id: 'contains',
+      id: containsMatch.id,
       score: MatchClass.CONTAINS,
     });
     expect(res[3]).toEqual({
-      id: 'exact',
+      id: exactMatch.id,
       score: MatchClass.EXACT,
     });
   });
   it('returns fast if input is longer than keyword', () => {
     // Given
     const input: string = 'xx';
-    const xMatch: Command = Karhu.createCommand({
-      id: 'no',
-      name: 'hello',
-      keywords: ['x'],
-      actions: { onExec: jest.fn() },
-      render: () => '',
-    });
+    const xMatch = createCommandWithKeywords(['x']);
 
-    const commands: Command[] = [xMatch];
+    const commands = [xMatch];
 
     // When
-    const res: ClassifiedMatches = classifyMatches(commands, input);
+    const res = classifyMatches(commands, input);
 
     // Then
     expect(res).toHaveLength(1);
     expect(res[0]).toEqual({
-      id: 'no',
+      id: xMatch.id,
       score: MatchClass.NO,
     });
   });
+  test('matches all of multiple input words, but separate', () => {
+    // Given
+    const input: string = 'first command two';
+
+    const partSeparatedMatch = createCommandWithKeywords(['first keyword command two']);
+    const partMultiMatch = createCommandWithKeywords(['zero first', 'command keyword', 'two steps']);
+    const partNonMatch = createCommandWithKeywords(['zero first', 'command keyword']);
+
+    const commands = [partSeparatedMatch, partMultiMatch, partNonMatch];
+
+    // When
+    const res = classifyMatches(commands, input);
+
+    // Then
+    expect(res).toHaveLength(3);
+    expect(res[0]).toEqual({
+      id: partSeparatedMatch.id,
+      score: Math.floor((MatchClass.STARTS + MatchClass.CONTAINS + MatchClass.CONTAINS) / 3),
+    });
+    expect(res[1]).toEqual({
+      id: partMultiMatch.id,
+      score: Math.floor((MatchClass.CONTAINS + MatchClass.STARTS + MatchClass.STARTS) / 3),
+    });
+    expect(res[2]).toEqual({
+      id: partNonMatch.id,
+      score: MatchClass.NO,
+    });
+  });
+
+  let commandNum = 0;
+  function createCommandWithKeywords(keywords: string[]): Command {
+    return Karhu.createCommand({
+      name: `c-${commandNum++}`,
+      keywords,
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+  }
 });
 
 describe('entryGraph', () => {

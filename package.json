@@ -9,7 +9,7 @@
     "lint": "tslint --project tsconfig.json",
     "test": "jest --no-cache --coverage --config jest.config.js",
     "dev": "jest --no-cache --config jest.config.js --watch",
-    "publish": "lerna run tsc && npm run preparePublish && lerna publish",
+    "publish": "lerna run tsc && npm run preparePublish && lerna publish && rm -rf .npmrc",
     "verify": "npm run test && lerna run tsc",
     "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc"
   },
