@@ -10,7 +10,9 @@
     "test": "jest --no-cache --coverage --config jest.config.js",
     "dev": "jest --no-cache --config jest.config.js --watch",
     "publish": "lerna run tsc && lerna publish",
-    "verify": "npm run test && lerna run tsc"
+    "verify": "npm run test && lerna run tsc",
+    "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
+    "prepublishOnly": "npm run preparePublish"
   },
   "keywords": [],
   "author": "",
