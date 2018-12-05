@@ -74,7 +74,7 @@ export default class Karhu {
     sortedIds = sortedIds.filter((id, i) => sortedIds.indexOf(id) === i); // Remove duplicates
     const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]);
     commands.forEach(c => {
-      if (c.actions.onShow) {
+      if (c && c.actions.onShow) {
         c.actions.onShow(c.id);
       }
     });
