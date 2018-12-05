@@ -72,9 +72,9 @@ export default class Karhu {
     classifiedMatches.sort((a, b) => b.score - a.score);
     let sortedIds: string[] = classifiedMatches.map(m => m.id);
     sortedIds = sortedIds.filter((id, i) => sortedIds.indexOf(id) === i); // Remove duplicates
-    const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]);
+    const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]).filter(c => !!c);
     commands.forEach(c => {
-      if (c && c.actions.onShow) {
+      if (c.actions.onShow) {
         c.actions.onShow(c.id);
       }
     });

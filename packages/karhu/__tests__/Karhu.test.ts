@@ -142,6 +142,41 @@ describe('Karhu', () => {
     expect(res[1].id).toEqual(startsMatch.id);
     expect(res[2].id).toEqual(containsMatch.id);
   });
+  test('findMatchingCommands only lists existing commands', () => {
+    // Given
+    const input: string = 'open';
+    const c1: Command = Karhu.createCommand({
+      id: 'c1',
+      name: 'hello',
+      keywords: ['open'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
+    });
+    const c2: Command = Karhu.createCommand({
+      id: 'c2',
+      name: 'hello',
+      keywords: ['open'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: () => '',
+    });
+
+    // When
+    // Add commands
+    karhu.addCommand(c1);
+    karhu.addCommand(c2);
+
+    // Run command so it's in the entry graph
+    karhu.runCommand(c2.id, input);
+
+    // Remove the command
+    karhu.removeCommand(c2.id);
+
+    // Find matches
+    const res2: Command[] = karhu.findMatchingCommands(input);
+
+    // Then
+    expect(res2).toHaveLength(1);
+  });
   test('runCommand returns if command not found', () => {
     const id: string = 'non-existent';
     const input: string = 'test';
