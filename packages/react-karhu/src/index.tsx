@@ -32,7 +32,7 @@ type Props = {
 };
 export class KarhuComponent extends React.Component<Props> {
   karhu?: Karhu;
-  exec = (id: string) => {
+  exec = (id: string): EntryGraph => {
     if (!this.karhu) {
       throw new Error('Karhu not found');
     }
