@@ -1,6 +1,6 @@
 {
   "name": "@karhu/core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Core package for Karhu, the lib for powering web app productivity tools",
   "author": "Oskar Hane <oh@oskarhane.com>",
   "scripts": {
