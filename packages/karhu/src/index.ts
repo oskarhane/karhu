@@ -52,6 +52,10 @@ export default class Karhu {
     return this.commands;
   }
 
+  replaceEntryGraph(entryGraph: EntryGraph): void {
+    this.entryGraph = entryGraph;
+  }
+
   getEntryGraph(): EntryGraph {
     return this.entryGraph;
   }

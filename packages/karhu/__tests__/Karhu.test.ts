@@ -315,4 +315,21 @@ describe('Karhu', () => {
     expect(hasInitial.getEntryGraph()).toEqual(initialEntryGraph);
     expect(noInitial.getEntryGraph()).toEqual({});
   });
+  test('entry graph can be replaced', () => {
+    // Given
+    const newEntryGraph: EntryGraph = {
+      s: {
+        commands: [{ id: 'test-id', calls: 3 }],
+      },
+    };
+
+    // Then
+    expect(karhu.getEntryGraph()).toEqual({});
+
+    // When
+    karhu.replaceEntryGraph(newEntryGraph);
+
+    // Then
+    expect(karhu.getEntryGraph()).toEqual(newEntryGraph);
+  });
 });
