@@ -201,6 +201,40 @@ describe('entryGraph', () => {
     expect(graph3).toHaveProperty(['next', 'b', 'commands', 1, 'id'], commandId);
     expect(graph3).toHaveProperty(['next', 'b', 'commands', 1, 'calls'], 1);
   });
+  test('updateEntryGraph normalizes the calls in history if the limit is reached', () => {
+    const word: string = 'b';
+    const commandId: string = 'test-cmd';
+    const commandId2: string = 'test-cmd2';
+    const limit: number = 40;
+
+    const initialGraph: EntryGraph = {
+      next: {
+        b: {
+          commands: [{ id: commandId, calls: 39 }],
+          next: {
+            l: {
+              commands: [{ id: commandId, calls: 12 }, { id: commandId2, calls: 14 }],
+            },
+          },
+        },
+      },
+    };
+
+    const graph: EntryGraph = updateEntryGraph(initialGraph, word, commandId, limit);
+
+    expect(graph).toEqual({
+      next: {
+        b: {
+          commands: [{ id: commandId, calls: 28 }],
+          next: {
+            l: {
+              commands: [{ id: commandId, calls: 8 }, { id: commandId2, calls: 9 }],
+            },
+          },
+        },
+      },
+    });
+  });
   test('sumCommandsRecursively works', () => {
     // Given
     const testCmds: EntryGraphRecord[] = [{ id: 'test-cmd', calls: 2 }, { id: 'test2-cmd', calls: 1 }];

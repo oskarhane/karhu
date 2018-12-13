@@ -88,7 +88,12 @@ function customMatch(id: string, score: number): ClassifiedMatch {
   };
 }
 
-export function updateEntryGraph(initialGraph: EntryGraph, input: string, cmdId: string): EntryGraph {
+export function updateEntryGraph(
+  initialGraph: EntryGraph,
+  input: string,
+  cmdId: string,
+  callLimit: number = 0,
+): EntryGraph {
   const letters: string[] = input.split('');
   const graphClone: EntryGraph = { ...initialGraph };
   let traverseObj = graphClone;
@@ -110,11 +115,32 @@ export function updateEntryGraph(initialGraph: EntryGraph, input: string, cmdId:
           traverseObj.commands.push({ id: cmdId, calls: 1 });
         } else {
           traverseObj.commands[cmdIndex].calls += 1;
+          if (callLimit > 0 && traverseObj.commands[cmdIndex].calls >= callLimit) {
+            traverseObj = normalizeEntryGraphCommandsCalls(traverseObj);
+          }
         }
       }
     }
   });
   return graphClone;
+}
+
+export function normalizeEntryGraphCommandsCalls(graph: EntryGraph) {
+  const factor: number = 0.7;
+  if (graph.commands) {
+    graph.commands = graph.commands.map(c => {
+      c.calls = Math.floor(c.calls * factor);
+      return c;
+    });
+  }
+  if (graph.next) {
+    const ids = Object.keys(graph.next);
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      graph.next[id] = normalizeEntryGraphCommandsCalls(graph.next[id]);
+    }
+  }
+  return graph;
 }
 
 export function findCommandsInEntryGraph(graph: EntryGraph, input: string): ClassifiedMatch[] {

@@ -12,19 +12,22 @@ import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from './u
 export default class Karhu {
   static currentId: number = 0;
   commands: Command[] = [];
-  contexts: string[] = ['default'];
   entryGraph: EntryGraph = {};
-  constructor(entryGraph?: EntryGraph) {
+  historyCallLimit: number = 30;
+
+  constructor(entryGraph?: EntryGraph, historyCallLimit?: number) {
     this.reset();
     if (entryGraph) {
       this.entryGraph = entryGraph;
+    }
+    if (historyCallLimit) {
+      this.historyCallLimit = historyCallLimit;
     }
   }
 
   reset(): void {
     Karhu.currentId = 0;
     this.commands = [];
-    this.contexts = ['default'];
     this.entryGraph = {};
   }
 
@@ -90,7 +93,7 @@ export default class Karhu {
     if (!command) {
       return this.entryGraph;
     }
-    this.entryGraph = updateEntryGraph(this.entryGraph, input, id);
+    this.entryGraph = updateEntryGraph(this.entryGraph, input, id, this.historyCallLimit);
     setTimeout(() => command.actions.onExec(), 0);
     this._recordRunCommand(id);
     return this.entryGraph;
