@@ -150,5 +150,5 @@ test('exec returns the entry graph', () => {
   const eg: EntryGraph = execFn(commandId);
 
   // Then
-  expect(eg).toEqual({ f: { commands: [{ calls: 1, id: 'c1' }] } });
+  expect(eg).toEqual({ next: { f: { commands: [{ calls: 1, id: 'c1' }] } } });
 });
