@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center" style="font-size: 1.2rem;">
-* Fast searches * Learns over time * Familiar concept *
+* Simple API * Learns over time * Familiar concept for users *
 </p>
 
 ---
