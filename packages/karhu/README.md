@@ -21,7 +21,7 @@ const karhu = new Karhu();
 
 ### `Karhu`
 
-#### `karhu.addCommand()`
+#### `karhu.addCommand`
 
 Adds a command to the current Karhu instance.
 
@@ -29,7 +29,7 @@ Adds a command to the current Karhu instance.
 karhu.addCommand(command: UnregisteredCommand): Command
 ```
 
-### `karhu.removeCommand`
+#### `karhu.removeCommand`
 
 Removes a command from teh current Karhu instance.
 
@@ -37,7 +37,7 @@ Removes a command from teh current Karhu instance.
 karhu.removeCommand(commandId: string): void
 ```
 
-### `karhu.findMatchingCommands`
+#### `karhu.findMatchingCommands`
 
 Searches through the existing commands keywords and the current entry graph to
 find commands that matches the provided input, and returns them.
@@ -46,7 +46,7 @@ find commands that matches the provided input, and returns them.
 karhu.findMatchingCommands(input?: string): Command[]
 ```
 
-### `karhu.runCommand`
+#### `karhu.runCommand`
 
 Call the command with the provided id's `.actions.onExec()` function.  
 Returns the updated entry graph.  
@@ -59,7 +59,7 @@ function is **not** being called synchronously. It's bering called using `setTim
 karhu.runCommand(id: string, input: string): EntryGraph
 ```
 
-### `karhu.getCommands`
+#### `karhu.getCommands`
 
 Returns a list of all registered commands for the Karhu instance.
 
@@ -67,7 +67,7 @@ Returns a list of all registered commands for the Karhu instance.
 karhu.getCommands(): Command[]
 ```
 
-### `karhu.getEntryGraph`
+#### `karhu.getEntryGraph`
 
 Returns the current Entry Graph for the Karhu instance.
 
@@ -75,7 +75,7 @@ Returns the current Entry Graph for the Karhu instance.
 karhu.getEntryGraph(): EntryGraph
 ```
 
-### Static `Karhu.createCommand`
+#### Static `Karhu.createCommand`
 
 Makes an `UnregisteredCommand` -> `Command`. Mostly used internally but can be useful in
 some situations.
