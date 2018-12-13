@@ -1,4 +1,12 @@
-import { Command, ClassifiedMatches, MatchClass, ClassifiedMatch, EntryGraph, EntryGraphRecord } from './types';
+import {
+  Command,
+  ClassifiedMatches,
+  MatchClass,
+  ClassifiedMatch,
+  EntryGraph,
+  EntryGraphRecord,
+  EntryGraphCommandsSummary,
+} from './types';
 
 export function classifyMatches(commands: Command[], input: string): ClassifiedMatches {
   const normInputWords = input.toLowerCase().split(' ');
@@ -85,12 +93,15 @@ export function updateEntryGraph(initialGraph: EntryGraph, input: string, cmdId:
   const graphClone: EntryGraph = { ...initialGraph };
   let traverseObj = graphClone;
   letters.forEach((letter, i) => {
-    if (!traverseObj.hasOwnProperty(letter)) {
-      traverseObj[letter] = {};
+    if (!traverseObj.next) {
+      traverseObj['next'] = {};
     }
-    traverseObj = traverseObj[letter];
+    if (!traverseObj.next.hasOwnProperty(letter)) {
+      traverseObj.next[letter] = {};
+    }
+    traverseObj = traverseObj.next[letter];
     if (i === letters.length - 1) {
-      if (!traverseObj.hasOwnProperty('commands')) {
+      if (!traverseObj.commands) {
         traverseObj.commands = [{ id: cmdId, calls: 1 }];
       } else {
         const idMap = traverseObj.commands.map((c: EntryGraphRecord) => c.id);
@@ -108,20 +119,51 @@ export function updateEntryGraph(initialGraph: EntryGraph, input: string, cmdId:
 
 export function findCommandsInEntryGraph(graph: EntryGraph, input: string): ClassifiedMatch[] {
   const letters: string[] = input.split('');
-  let traverseObj = graph;
+  let traverseObj: EntryGraph = graph;
   for (let i = 0; i < letters.length; i += 1) {
-    if (!traverseObj[letters[i]]) {
+    if (!traverseObj.next || !traverseObj.next[letters[i]]) {
       return [];
     }
-    traverseObj = traverseObj[letters[i]];
+    traverseObj = traverseObj.next[letters[i]] as EntryGraph;
   }
-  if (traverseObj.hasOwnProperty('commands')) {
-    return traverseObj['commands'].map((cmd: EntryGraphRecord) => {
-      return {
-        id: cmd.id,
-        score: MatchClass.HISTORY * cmd.calls,
-      };
-    });
-  }
-  return [];
+  const commandsSummary = sumCommandsRecursively(traverseObj);
+  return Object.keys(commandsSummary).map(c => {
+    const cmd = commandsSummary[c];
+    const m: ClassifiedMatch = {
+      id: cmd.id,
+      score: MatchClass.HISTORY * cmd.calls,
+    };
+    return m;
+  });
 }
+
+export const sumCommandsRecursively = (graph: EntryGraph): EntryGraphCommandsSummary => {
+  let foundCommands: EntryGraphCommandsSummary = {};
+  const { commands = [], next = {} } = graph;
+  const { commands: noop, ...chars } = next;
+  commands.forEach((c: EntryGraphRecord) => {
+    if (!foundCommands.hasOwnProperty(c.id)) {
+      foundCommands[c.id] = {
+        id: c.id,
+        calls: 0,
+      } as EntryGraphRecord;
+    }
+    foundCommands[c.id].calls += c.calls;
+  });
+  foundCommands = Object.keys(chars).reduce((allCommands, curr: string) => {
+    const newCommands = sumCommandsRecursively(chars[curr]);
+    if (!newCommands || !Object.keys(newCommands).length) {
+      return allCommands;
+    }
+    Object.keys(newCommands).forEach(id => {
+      const cmd = newCommands[id];
+      if (allCommands.hasOwnProperty(cmd.id)) {
+        allCommands[cmd.id].calls += cmd.calls;
+      } else {
+        allCommands[cmd.id] = cmd;
+      }
+    });
+    return allCommands;
+  }, foundCommands);
+  return foundCommands;
+};

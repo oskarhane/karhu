@@ -1,4 +1,4 @@
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from '../src/utils';
+import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, sumCommandsRecursively } from '../src/utils';
 import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
 import Karhu from '../src';
 
@@ -101,12 +101,22 @@ describe('entryGraph', () => {
     const graph: EntryGraph = updateEntryGraph(initialGraph, word, commandId);
 
     expect(graph).toEqual({
-      b: {
-        l: {
-          o: {
-            o: {
-              m: {
-                commands: [{ id: commandId, calls: 1 }],
+      next: {
+        b: {
+          next: {
+            l: {
+              next: {
+                o: {
+                  next: {
+                    o: {
+                      next: {
+                        m: {
+                          commands: [{ id: commandId, calls: 1 }],
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -128,26 +138,42 @@ describe('entryGraph', () => {
 
     // Then
     const expectedGraph = {
-      b: {
-        l: {
-          o: {
-            o: {
-              m: {
-                commands: [{ id: commandId, calls: 1 }],
-              },
-            },
-            s: {
-              s: {
+      next: {
+        b: {
+          next: {
+            l: {
+              next: {
                 o: {
-                  m: {
-                    commands: [{ id: initialCmdId1, calls: 1 }],
+                  next: {
+                    o: {
+                      next: {
+                        m: {
+                          commands: [{ id: commandId, calls: 1 }],
+                        },
+                      },
+                    },
+                    s: {
+                      next: {
+                        s: {
+                          next: {
+                            o: {
+                              next: {
+                                m: {
+                                  commands: [{ id: initialCmdId1, calls: 1 }],
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },
             },
           },
+          commands: [{ id: initialCmdId2, calls: 1 }],
         },
-        commands: [{ id: initialCmdId2, calls: 1 }],
       },
     };
     expect(graph).toEqual(expectedGraph);
@@ -157,17 +183,55 @@ describe('entryGraph', () => {
     const graph2: EntryGraph = updateEntryGraph(initialGraph, word, commandId);
 
     // Then
-    expect(graph2).toHaveProperty(['b', 'l', 'o', 'o', 'm', 'commands', 0, 'id'], commandId);
-    expect(graph2).toHaveProperty(['b', 'l', 'o', 'o', 'm', 'commands', 0, 'calls'], 2);
+    expect(graph2).toHaveProperty(
+      ['next', 'b', 'next', 'l', 'next', 'o', 'next', 'o', 'next', 'm', 'commands', 0, 'id'],
+      commandId,
+    );
+    expect(graph2).toHaveProperty(
+      ['next', 'b', 'next', 'l', 'next', 'o', 'next', 'o', 'next', 'm', 'commands', 0, 'calls'],
+      2,
+    );
 
     // When
     // Call bloom on just 'b' input
     const graph3: EntryGraph = updateEntryGraph(graph2, 'b', commandId);
 
     // Then
-    expect(graph3).toHaveProperty(['b', 'commands', 0, 'id'], initialCmdId2); // Make sure the old one is there
-    expect(graph3).toHaveProperty(['b', 'commands', 1, 'id'], commandId);
-    expect(graph3).toHaveProperty(['b', 'commands', 1, 'calls'], 1);
+    expect(graph3).toHaveProperty(['next', 'b', 'commands', 0, 'id'], initialCmdId2); // Make sure the old one is there
+    expect(graph3).toHaveProperty(['next', 'b', 'commands', 1, 'id'], commandId);
+    expect(graph3).toHaveProperty(['next', 'b', 'commands', 1, 'calls'], 1);
+  });
+  test('sumCommandsRecursively works', () => {
+    // Given
+    const testCmds: EntryGraphRecord[] = [{ id: 'test-cmd', calls: 2 }, { id: 'test2-cmd', calls: 1 }];
+    const graph: EntryGraph = {
+      next: {
+        b: {
+          next: {
+            l: {
+              next: {
+                o: { commands: testCmds, next: { o: { commands: testCmds, next: { o: { commands: testCmds } } } } },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    // When
+    const res = sumCommandsRecursively(graph);
+
+    // Then
+    expect(res).toEqual({
+      'test-cmd': {
+        id: 'test-cmd',
+        calls: 6,
+      },
+      'test2-cmd': {
+        id: 'test2-cmd',
+        calls: 3,
+      },
+    });
   });
   test('findCommandsInEntryGraph traverses the graph and return empty if no commands', () => {
     // Given
@@ -182,7 +246,7 @@ describe('entryGraph', () => {
   });
   test('findCommandsInEntryGraph traverses the graph and return empty if no commands', () => {
     // Given
-    const graph: EntryGraph = { b: { l: { o: { o: {} } } } };
+    const graph: EntryGraph = { next: { b: { next: { l: { next: { o: { next: { o: {} } } } } } } } };
     const input = 'blo';
 
     // When
@@ -194,7 +258,9 @@ describe('entryGraph', () => {
   test('findCommandsInEntryGraph traverses the graph and return command ids if commands', () => {
     // Given
     const testCmds: EntryGraphRecord[] = [{ id: 'test-tcmd', calls: 1 }, { id: 'test2-cmd', calls: 1 }];
-    const graph: EntryGraph = { b: { l: { o: { commands: testCmds, o: {} } } } };
+    const graph: EntryGraph = {
+      next: { b: { next: { l: { next: { o: { commands: testCmds, next: { o: {} } } } } } } },
+    };
     const input = 'blo';
 
     // When
@@ -206,6 +272,27 @@ describe('entryGraph', () => {
         return {
           id: cmd.id,
           score: MatchClass.HISTORY * cmd.calls,
+        };
+      }),
+    );
+  });
+  test('findCommandsInEntryGraph traverses the graph deeply and collect scores for commands', () => {
+    // Given
+    const testCmds: EntryGraphRecord[] = [{ id: 'test-tcmd', calls: 2 }, { id: 'test2-cmd', calls: 1 }];
+    const graph: EntryGraph = {
+      next: { b: { next: { l: { next: { o: { commands: testCmds, next: { o: { commands: testCmds } } } } } } } },
+    };
+    const input = 'blo';
+
+    // When
+    const commandIds: ClassifiedMatch[] = findCommandsInEntryGraph(graph, input);
+
+    // Then
+    expect(commandIds).toEqual(
+      testCmds.map((cmd: EntryGraphRecord) => {
+        return {
+          id: cmd.id,
+          score: MatchClass.HISTORY * cmd.calls * 2, // times 2 for deep scores
         };
       }),
     );

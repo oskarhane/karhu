@@ -217,9 +217,13 @@ describe('Karhu', () => {
     expect(startsMatch.meta.calls).toEqual(1);
 
     expect(res).toEqual({
-      y: {
-        o: {
-          commands: [{ id: startsMatch.id, calls: 1 }],
+      next: {
+        y: {
+          next: {
+            o: {
+              commands: [{ id: startsMatch.id, calls: 1 }],
+            },
+          },
         },
       },
     });
@@ -303,8 +307,10 @@ describe('Karhu', () => {
   test('provided entry graph is used', () => {
     // Given
     const initialEntryGraph: EntryGraph = {
-      s: {
-        commands: [{ id: 'test-id', calls: 1 }],
+      next: {
+        s: {
+          commands: [{ id: 'test-id', calls: 1 }],
+        },
       },
     };
 
@@ -319,8 +325,10 @@ describe('Karhu', () => {
   test('entry graph can be replaced', () => {
     // Given
     const newEntryGraph: EntryGraph = {
-      s: {
-        commands: [{ id: 'test-id', calls: 3 }],
+      next: {
+        s: {
+          commands: [{ id: 'test-id', calls: 3 }],
+        },
       },
     };
 

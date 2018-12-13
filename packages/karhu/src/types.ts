@@ -22,7 +22,7 @@ export enum MatchClass {
   STARTS = 3,
   CONTAINS = 2,
   ACRONYM = 1,
-  NO = 0
+  NO = 0,
 }
 
 export interface ClassifiedMatch {
@@ -32,11 +32,18 @@ export interface ClassifiedMatch {
 
 export type ClassifiedMatches = ClassifiedMatch[];
 
-export type EntryGraph = any;
+export interface EntryGraph {
+  next?: { [key: string]: EntryGraph };
+  commands?: EntryGraphRecord[];
+}
+
 export interface EntryGraphRecord {
   id: string;
   calls: number;
 }
+export type EntryGraphCommandsSummary = {
+  [key: string]: EntryGraphRecord;
+};
 
 export interface ActionsObject {
   onExec: () => void;
