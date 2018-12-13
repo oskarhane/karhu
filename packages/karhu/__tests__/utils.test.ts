@@ -205,7 +205,7 @@ describe('entryGraph', () => {
       testCmds.map((cmd: EntryGraphRecord) => {
         return {
           id: cmd.id,
-          score: MatchClass.HISTORY + cmd.calls,
+          score: MatchClass.HISTORY * cmd.calls,
         };
       }),
     );

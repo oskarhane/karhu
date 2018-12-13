@@ -262,6 +262,7 @@ describe('Karhu', () => {
     // When
     // This time the score for history will pass starts
     karhu.runCommand(containsMatch.id, input);
+    karhu.runCommand(containsMatch.id, input);
     jest.runOnlyPendingTimers();
     list = karhu.findMatchingCommands(input);
 

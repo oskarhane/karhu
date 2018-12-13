@@ -119,7 +119,7 @@ export function findCommandsInEntryGraph(graph: EntryGraph, input: string): Clas
     return traverseObj['commands'].map((cmd: EntryGraphRecord) => {
       return {
         id: cmd.id,
-        score: MatchClass.HISTORY + cmd.calls,
+        score: MatchClass.HISTORY * cmd.calls,
       };
     });
   }
