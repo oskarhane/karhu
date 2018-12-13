@@ -20,7 +20,7 @@ export default class Karhu {
     if (entryGraph) {
       this.entryGraph = entryGraph;
     }
-    if (historyCallLimit) {
+    if (historyCallLimit !== undefined) {
       this.historyCallLimit = historyCallLimit;
     }
   }

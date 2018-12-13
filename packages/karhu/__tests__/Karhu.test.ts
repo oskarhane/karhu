@@ -315,7 +315,7 @@ describe('Karhu', () => {
     };
 
     // When
-    const hasInitial: Karhu = new Karhu(initialEntryGraph);
+    const hasInitial: Karhu = new Karhu(initialEntryGraph, 0);
     const noInitial: Karhu = new Karhu();
 
     // Then
