@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import Karhu from '@karhu/core';
-// import { UnregisteredCommand, Command } from '@karhu/core/lib/types';
-//import { KarhuComponent, KarhuProvider, AddCommand } from '@karhu/react';
+import { UnregisteredCommand, Command } from '@karhu/core/lib/types';
+import { KarhuProvider } from '@karhu/react';
 
 import { DirtyPolarBear } from '../src';
 
@@ -14,7 +14,7 @@ if (!portalRoot) {
 }
 
 describe('polarbear', () => {
-  let karhu: Karhu;
+  let karhu: Karhu = new Karhu();
   const openWith = (e: KeyboardEvent) => {
     return e.keyCode === 75;
   };
@@ -51,5 +51,51 @@ describe('polarbear', () => {
 
     // Then
     expect(baseElement.querySelector('.karhu')).toBeNull();
+  });
+  test('lists and interacts with the commands', () => {
+    const cmd1: UnregisteredCommand = {
+      id: 'test',
+      name: 'Test Command 1',
+      keywords: ['test'],
+      render: jest.fn((c: Command) => {
+        <div>{c.name}</div>;
+      }),
+      actions: {
+        onExec: jest.fn(),
+      },
+    };
+    karhu.addCommand(cmd1);
+    const cmd2: UnregisteredCommand = {
+      id: 'test',
+      name: 'Test Command 2',
+      keywords: ['test'],
+      render: jest.fn((c: Command) => {
+        <div>{c.name}</div>;
+      }),
+      actions: {
+        onExec: jest.fn(),
+      },
+    };
+    karhu.addCommand(cmd2);
+    const cmd3: UnregisteredCommand = {
+      id: 'test',
+      name: 'Test Command 3',
+      keywords: ['test'],
+      render: jest.fn((c: Command) => {
+        <div>{c.name}</div>;
+      }),
+      actions: {
+        onExec: jest.fn(),
+      },
+    };
+    karhu.addCommand(cmd3);
+
+    // When
+    const { debug } = render(
+      <KarhuProvider value={karhu}>
+        <DirtyPolarBear openWith={openWith} closeWith={closeWith} element={portalRoot} />
+      </KarhuProvider>,
+    );
+    debug();
   });
 });
