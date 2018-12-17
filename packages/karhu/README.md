@@ -75,6 +75,14 @@ Returns the current Entry Graph for the Karhu instance.
 karhu.getEntryGraph(): EntryGraph
 ```
 
+#### `karhu.replaceEntryGraph`
+
+Overwrites the the current Entry Graph for the Karhu instance with the new one.
+
+```ts
+karhu.replaceEntryGraph(entryGraph: EntryGraph): void
+```
+
 #### Static `Karhu.createCommand`
 
 Makes an `UnregisteredCommand` -> `Command`. Mostly used internally but can be useful in
