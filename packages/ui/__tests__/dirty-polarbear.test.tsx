@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import Karhu from '@karhu/core';
-import { UnregisteredCommand, Command } from '@karhu/core/lib/types';
+// import { UnregisteredCommand, Command } from '@karhu/core/lib/types';
 //import { KarhuComponent, KarhuProvider, AddCommand } from '@karhu/react';
 
 import { DirtyPolarBear } from '../src';
@@ -15,40 +15,41 @@ if (!portalRoot) {
 
 describe('polarbear', () => {
   let karhu: Karhu;
+  const openWith = (e: KeyboardEvent) => {
+    return e.keyCode === 75;
+  };
+  const closeWith = (e: KeyboardEvent) => {
+    return e.keyCode === 27;
+  };
   beforeEach(() => {
     karhu = new Karhu({});
   });
   afterEach(() => {
     karhu.reset();
   });
-  test('renders', () => {
-    const cmd1: UnregisteredCommand = {
-      id: 'test',
-      name: 'Test Command',
-      keywords: ['test'],
-      render: jest.fn((c: Command) => {
-        <div>{c.name}</div>;
-      }),
-      actions: {
-        onExec: jest.fn(),
-      },
-    };
-    karhu.addCommand(cmd1);
-
+  test('renders and opens and closes', () => {
     // When
-    const { baseElement } = render(<DirtyPolarBear element={portalRoot} />);
+    const { baseElement } = render(<DirtyPolarBear openWith={openWith} closeWith={closeWith} element={portalRoot} />);
 
     // Then
     expect(baseElement.querySelector('.karhu')).toBeNull();
 
     // When pressing hotkey
     fireEvent.keyDown(document.body, {
-      altKey: true,
-      keyCode: 32,
+      keyCode: 75,
     });
 
     // Then
     expect(baseElement.querySelector('.karhu')).not.toBeNull();
     expect(baseElement.querySelector('.karhu input')).not.toBeNull();
+
+    // When
+    // Press escape
+    fireEvent.keyDown(document.body, {
+      keyCode: 27,
+    });
+
+    // Then
+    expect(baseElement.querySelector('.karhu')).toBeNull();
   });
 });

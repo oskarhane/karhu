@@ -26,6 +26,8 @@ class Input extends React.Component<InputProps> {
 interface Props {
   element: HTMLElement | null;
   persistEntryGraph?: (entryGraph: EntryGraph) => {};
+  openWith: (e: KeyboardEvent) => boolean;
+  closeWith: (e: KeyboardEvent) => boolean;
 }
 interface State {
   input: string;
@@ -33,7 +35,7 @@ interface State {
   activeCommand: number;
 }
 
-class PowerTool extends React.Component<Props, State> {
+class DirtyPloarBear extends React.Component<Props, State> {
   public setInputFn: (str: string) => void;
   public ref: any;
   public state: State = {
@@ -63,15 +65,12 @@ class PowerTool extends React.Component<Props, State> {
     }
   }
   public handleKeyPress = (e: any) => {
-    const { altKey, keyCode } = e;
-    if (!this.state.open && altKey && keyCode === 32) {
-      // Alt + space
+    if (!this.state.open && this.props.openWith(e)) {
       e.preventDefault();
       this.setState({ open: true });
       return;
     }
-    if (this.state.open && keyCode === 27) {
-      // Esc
+    if (this.state.open && this.props.closeWith(e)) {
       e.preventDefault();
       this.close();
       return;
@@ -126,4 +125,4 @@ class PowerTool extends React.Component<Props, State> {
   }
 }
 
-export default PowerTool;
+export default DirtyPloarBear;
