@@ -25,7 +25,7 @@ class Input extends React.Component<InputProps> {
 
 interface Props {
   element: HTMLElement | null;
-  persistEntryGraph?: (entryGraph: EntryGraph) => {};
+  onExec?: (entryGraph: EntryGraph) => {};
   openWith: (e: KeyboardEvent) => boolean;
   closeWith: (e: KeyboardEvent) => boolean;
 }
@@ -105,8 +105,8 @@ class DirtyPloarBear extends React.Component<Props, State> {
         {({ commandsList, exec }) => {
           const onExec = (id: string) => {
             const entryGraph: EntryGraph = exec(id);
-            if (this.props.persistEntryGraph) {
-              this.props.persistEntryGraph(entryGraph);
+            if (this.props.onExec) {
+              this.props.onExec(entryGraph);
             }
             this.close();
           };
