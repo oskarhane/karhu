@@ -5,6 +5,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "docz:dev": "docz dev",
+    "docz:build": "docz build",
     "tsc": "tsc",
     "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
     "prepublishOnly": "npm run preparePublish"
@@ -13,11 +15,14 @@
   "license": "Apache-2.0",
   "peerDependencies": {
     "@karhu/core": "*",
+    "@karhu/react": "*",
     "react": "^16.6.3",
     "react-dom": "^16.6.3"
   },
   "dependencies": {
-    "@karhu/core": "^0.5.0"
+    "@karhu/core": "^0.5.0",
+    "@karhu/react": "^0.5.0",
+    "docz": "^0.12.17"
   },
   "devDependencies": {
     "@types/react": "^16.7.6",

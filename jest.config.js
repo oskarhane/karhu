@@ -1,4 +1,5 @@
 module.exports = {
+  setupTestFrameworkScriptFile: './setup-tests.js',
   clearMocks: true,
   coverageDirectory: 'coverage',
   coverageThreshold: {
