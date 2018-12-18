@@ -24,75 +24,22 @@ class Input extends React.Component<InputProps> {
 
 interface Props {
   onExec?: (entryGraph: EntryGraph) => {};
-  openWith: (e: KeyboardEvent) => boolean;
-  closeWith: (e: KeyboardEvent) => boolean;
+  open: boolean;
 }
 interface State {
   input: string;
-  open: boolean;
-  activeCommand: number;
 }
 
-class DirtyPloarBear extends React.Component<Props, State> {
-  public setInputFn: (str: string) => void;
-  public ref: any;
+class DirtyPolarBear extends React.Component<Props, State> {
   public state: State = {
-    activeCommand: 0,
     input: '',
-    open: false,
-  };
-  constructor(props: Props) {
-    super(props);
-    this.setInputFn = () => {};
-  }
-  public componentDidMount() {
-    this.ref = React.createRef();
-    window.addEventListener('keydown', this.handleKeyPress);
-  }
-  public componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyPress);
-  }
-  componentDidUpdate(_: Props, prevState: State) {
-    if (prevState.open === this.state.open) {
-      return;
-    }
-    if (this.state.open) {
-      document.addEventListener('click', this.handleOutsideClick);
-    } else {
-      document.removeEventListener('click', this.handleOutsideClick);
-    }
-  }
-  public handleKeyPress = (e: any) => {
-    if (!this.state.open && this.props.openWith(e)) {
-      e.preventDefault();
-      this.setState({ open: true });
-      return;
-    }
-    if (this.state.open && this.props.closeWith(e)) {
-      e.preventDefault();
-      this.close();
-      return;
-    }
-  };
-  public handleOutsideClick = (e: any) => {
-    if (!this.state.open) {
-      return;
-    }
-    const target = e.target;
-    if (target !== this.ref.current && !this.ref.current.contains(target)) {
-      this.close();
-      return;
-    }
-  };
-  public close = () => {
-    this.setState({ open: false, activeCommand: 0 });
   };
   public inputChange = (e: any) => {
     const input = e.target.value;
     this.setState({ input });
   };
   public render() {
-    if (!this.state.open) {
+    if (!this.props.open) {
       return null;
     }
     return (
@@ -103,10 +50,9 @@ class DirtyPloarBear extends React.Component<Props, State> {
             if (this.props.onExec) {
               this.props.onExec(entryGraph);
             }
-            this.close();
           };
           return (
-            <div ref={this.ref} className="karhu">
+            <div className="karhu">
               <div>
                 <Input value={this.state.input} onChange={this.inputChange} />
               </div>
@@ -119,4 +65,4 @@ class DirtyPloarBear extends React.Component<Props, State> {
   }
 }
 
-export default DirtyPloarBear;
+export default DirtyPolarBear;
