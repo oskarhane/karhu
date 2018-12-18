@@ -1,5 +1,4 @@
 import React, { ReactEventHandler } from 'react';
-import ReactDOM from 'react-dom';
 import { KarhuComponent } from '@karhu/react';
 import CommandList from './CommandList';
 //import './style.css';
@@ -24,7 +23,6 @@ class Input extends React.Component<InputProps> {
 }
 
 interface Props {
-  element: HTMLElement | null;
   onExec?: (entryGraph: EntryGraph) => {};
   openWith: (e: KeyboardEvent) => boolean;
   closeWith: (e: KeyboardEvent) => boolean;
@@ -94,13 +92,10 @@ class DirtyPloarBear extends React.Component<Props, State> {
     this.setState({ input });
   };
   public render() {
-    if (!this.props.element) {
-      return null;
-    }
     if (!this.state.open) {
       return null;
     }
-    return ReactDOM.createPortal(
+    return (
       <KarhuComponent input={this.state.input}>
         {({ commandsList, exec }) => {
           const onExec = (id: string) => {
@@ -119,8 +114,7 @@ class DirtyPloarBear extends React.Component<Props, State> {
             </div>
           );
         }}
-      </KarhuComponent>,
-      this.props.element,
+      </KarhuComponent>
     );
   }
 }
