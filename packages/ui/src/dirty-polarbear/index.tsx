@@ -23,7 +23,8 @@ class Input extends React.Component<InputProps> {
 }
 
 interface Props {
-  onExec?: (entryGraph: EntryGraph) => {};
+  onExec?: (entryGraph: EntryGraph) => void;
+  setUIRef?: any;
   open: boolean;
 }
 interface State {
@@ -52,7 +53,7 @@ class DirtyPolarBear extends React.Component<Props, State> {
             }
           };
           return (
-            <MainElement>
+            <MainElement ref={this.props.setUIRef}>
               <div>
                 <Input value={this.state.input} onChange={this.inputChange} />
               </div>

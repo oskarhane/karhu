@@ -39,7 +39,6 @@ type StyledItemProps = {
 
 export const CommandListItem = styled.li`
   max-height: 50px;
-  height: 50px;
   background: ${(props: StyledItemProps) => (props.active ? '#256ed7' : '#e9e9ea')};
   color: ${(props: StyledItemProps) => (props.active ? '#fff' : '#000')};
   margin: 0;
