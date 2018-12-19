@@ -21,6 +21,7 @@ export const MainInput = styled.input`
   margin: 15px;
   font-size: 40px;
   z-index: 9;
+  outline: none;
 `;
 
 export const CommandList = styled.ul`
