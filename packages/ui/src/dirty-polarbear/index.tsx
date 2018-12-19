@@ -53,7 +53,7 @@ class DirtyPolarBear extends React.Component<Props, State> {
             }
           };
           return (
-            <MainElement ref={this.props.setUIRef}>
+            <MainElement data-testid="dpb" ref={this.props.setUIRef}>
               <div>
                 <Input value={this.state.input} onChange={this.inputChange} />
               </div>
