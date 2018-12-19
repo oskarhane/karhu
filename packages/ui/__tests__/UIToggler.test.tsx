@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import { UIToggler } from '../src';
-import { ESCAPE_PRESS, OUTSIDE_CLICK, COMMAND_EXECUTION, RenderProps } from '../src/UIToggler';
+import { ESCAPE_PRESS, OUTSIDE_CLICK, COMMAND_EXECUTION } from '../src/UIToggler';
 
 describe('UIToggler', () => {
   const shouldOpen = (e: KeyboardEvent) => {
@@ -46,21 +46,27 @@ describe('UIToggler', () => {
   });
   test('calls shouldClose on clicks outside', () => {
     shouldClose.mockClear();
-    const My = ({ open } = { open: false }) => {
-      if (open) {
-        return <div>hello</div>;
+    class My extends React.Component<any> {
+      render() {
+        if (this.props.open) {
+          return (
+            <div>
+              outer<div ref={this.props.setUIRef}>inner</div>
+            </div>
+          );
+        }
+        return null;
       }
-      return null;
-    };
+    }
 
     const { container, queryByText, getByText } = render(
       <UIToggler shouldOpen={shouldOpen} shouldClose={shouldClose}>
-        {props => <My open={props.open} />}
+        {props => <My open={props.open} setUIRef={props.setUIRef} />}
       </UIToggler>,
     );
 
     // Then
-    expect(queryByText('hello')).toBeNull();
+    expect(queryByText('inner')).toBeNull();
 
     // When
     // When pressing hotkey
@@ -70,27 +76,27 @@ describe('UIToggler', () => {
     });
 
     // Then
-    expect(getByText('hello')).not.toBeNull();
+    expect(getByText('inner')).not.toBeNull();
 
     // When
     // Click on the inside
-    fireEvent.click(getByText('hello'));
+    fireEvent.click(getByText('inner'));
 
     // Then
     // No change
-    expect(getByText('hello')).not.toBeNull();
+    expect(getByText('inner')).not.toBeNull();
 
     // When
     // Click on the outise
-    fireEvent.click(document.body);
+    fireEvent.click(getByText('outer'));
 
     expect(shouldClose).toHaveBeenCalledWith(OUTSIDE_CLICK);
-    expect(queryByText('hello')).toBeNull();
+    expect(queryByText('inner')).toBeNull();
   });
   test('calls shouldClose whan calling onExec', () => {
     shouldClose.mockClear();
     let innerExecFn: any = null;
-    const My = (props: RenderProps) => {
+    const My = (props: any) => {
       if (props.open) {
         innerExecFn = props.onExec;
         return <div>hello</div>;

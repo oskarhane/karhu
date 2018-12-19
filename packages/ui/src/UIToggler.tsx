@@ -23,6 +23,7 @@ type State = {
 export type RenderProps = {
   open: boolean;
   onExec: (entryGraph: EntryGraph) => void;
+  setUIRef: (el: HTMLElement) => void;
 };
 
 export default class Toggler extends React.Component<Props, State> {
@@ -86,7 +87,7 @@ export default class Toggler extends React.Component<Props, State> {
     if (!this.state.open) {
       return null;
     }
-    const renderProps: RenderProps = { open: this.state.open, onExec: () => this.close(COMMAND_EXECUTION) };
-    return <div ref={this.ref}>{this.props.children(renderProps)}</div>;
+    const renderProps: RenderProps = { open: this.state.open, onExec: () => this.close(COMMAND_EXECUTION), setUIRef: this.ref };
+    return this.props.children(renderProps)
   }
 }
