@@ -1,6 +1,6 @@
 {
   "name": "@karhu/ui",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "User interfaces for Karhu",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,8 +21,8 @@
   "dependencies": {
     "@emotion/core": "^10.0.5",
     "@emotion/styled": "^10.0.5",
-    "@karhu/core": "^0.5.0",
-    "@karhu/react": "^0.5.0"
+    "@karhu/core": "^0.6.0",
+    "@karhu/react": "^0.6.0"
   },
   "devDependencies": {
     "@types/react": "^16.7.6",
