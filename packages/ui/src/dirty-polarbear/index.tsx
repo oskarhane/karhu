@@ -1,7 +1,7 @@
 import React, { ReactEventHandler } from 'react';
 import { KarhuComponent } from '@karhu/react';
 import CommandList from './CommandList';
-//import './style.css';
+import { MainElement, MainInput } from './styled';
 import { EntryGraph } from '@karhu/core/lib/types';
 
 interface InputProps {
@@ -10,7 +10,7 @@ interface InputProps {
 }
 
 class Input extends React.Component<InputProps> {
-  private inputRef = React.createRef<HTMLInputElement>();
+  inputRef = React.createRef<HTMLInputElement>();
   public componentDidMount() {
     if (this.inputRef && this.inputRef.current) {
       this.inputRef.current.select();
@@ -18,7 +18,7 @@ class Input extends React.Component<InputProps> {
     }
   }
   public render() {
-    return <input type="text" ref={this.inputRef} onChange={this.props.onChange} value={this.props.value} />;
+    return <MainInput type="text" ref={this.inputRef} onChange={this.props.onChange} value={this.props.value} />;
   }
 }
 
@@ -52,12 +52,12 @@ class DirtyPolarBear extends React.Component<Props, State> {
             }
           };
           return (
-            <div className="karhu">
+            <MainElement>
               <div>
                 <Input value={this.state.input} onChange={this.inputChange} />
               </div>
               <CommandList onExec={onExec} commands={commandsList} />
-            </div>
+            </MainElement>
           );
         }}
       </KarhuComponent>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Command } from '@karhu/core/lib/types';
+import { CommandList as StyledComamndList, CommandListItem } from './styled';
 import ListSelector from '../ListSelector';
 
 type Props = {
@@ -15,26 +16,26 @@ export default class CommandList extends React.Component<Props, State> {
   render() {
     const { commands, onExec } = this.props;
     return (
-      <ul>
+      <StyledComamndList>
         <ListSelector commands={commands} onExec={onExec}>
           {({ onSelect, activeCommandId, onExec }) => {
             return (
               <React.Fragment>
                 {commands.map((c: Command) => (
-                  <li
+                  <CommandListItem
                     className={activeCommandId === c.id ? 'active' : ''}
                     onMouseEnter={() => onSelect(c.id)}
                     onClick={() => onExec(c.id)}
                     key={c.id}
                   >
                     {c.render(c)}
-                  </li>
+                  </CommandListItem>
                 ))}
               </React.Fragment>
             );
           }}
         </ListSelector>
-      </ul>
+      </StyledComamndList>
     );
   }
 }

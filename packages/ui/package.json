@@ -5,8 +5,6 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "docz:dev": "docz dev",
-    "docz:build": "docz build",
     "tsc": "tsc",
     "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
     "prepublishOnly": "npm run preparePublish"
@@ -20,9 +18,10 @@
     "react-dom": "^16.6.3"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.5",
+    "@emotion/styled": "^10.0.5",
     "@karhu/core": "^0.5.0",
-    "@karhu/react": "^0.5.0",
-    "docz": "^0.12.17"
+    "@karhu/react": "^0.5.0"
   },
   "devDependencies": {
     "@types/react": "^16.7.6",
