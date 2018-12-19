@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
-    "prepublishOnly": "npm run preparePublish"
+    "prepublishOnly": "npm run preparePublish",
+    "postpublish": "rm -f .npmrc"
   },
   "license": "Apache-2.0",
   "main": "lib/index.js",
