@@ -20,7 +20,7 @@ module.exports = {
   notifyMode: 'always',
   roots: ['<rootDir>packages'],
   testMatch: ['**/__tests__/*.+(ts|tsx|js)'],
-  collectCoverageFrom: ['**/src/**/*.js', '**/src/**/*.ts', '**/src/**/*.tsx'],
+  collectCoverageFrom: ['**/src/**/*.js', '**/src/**/*.ts', '**/src/**/*.tsx', '!**/playground/**/*.*'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
