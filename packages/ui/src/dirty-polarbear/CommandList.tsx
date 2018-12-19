@@ -23,7 +23,7 @@ export default class CommandList extends React.Component<Props, State> {
               <React.Fragment>
                 {commands.map((c: Command) => (
                   <CommandListItem
-                    className={activeCommandId === c.id ? 'active' : ''}
+                    active={activeCommandId === c.id}
                     onMouseEnter={() => onSelect(c.id)}
                     onClick={() => onExec(c.id)}
                     key={c.id}

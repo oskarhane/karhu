@@ -38,6 +38,7 @@ type StyledItemProps = {
 };
 
 export const CommandListItem = styled.li`
+  max-height: 50px;
   height: 50px;
   background: ${(props: StyledItemProps) => (props.active ? '#256ed7' : '#e9e9ea')};
   color: ${(props: StyledItemProps) => (props.active ? '#fff' : '#000')};
@@ -46,7 +47,7 @@ export const CommandListItem = styled.li`
   font-weight: 400;
   font-size: 22px;
   line-height: 16px;
-  .subtitle {
+  & .subtitle {
     font-size: 13px;
     font-style: italic;
     color: ${(props: StyledItemProps) => (props.active ? '#bbb' : '#8d8d8d')};
