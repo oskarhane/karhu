@@ -27,40 +27,36 @@ export const AddCommand = (props: AddCommandProps) => {
   return null;
 };
 
-type Props = {
-  children: (obj: ChildrenProviderObject) => JSX.Element;
-  input: string;
-};
-
-export function useKarhu(props: Props) {
+export function useKarhu(input: string): ChildrenProviderObject {
   const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
   const { karhu } = karhuContext;
   const [commandsList, setCommandsList] = useState<Command[]>([]);
+  if (!karhu) {
+    throw new Error('Karhu not found');
+  }
 
   useEffect(
     () => {
-      if (!karhu) {
-        throw new Error('Karhu not found');
-      }
-      const list = karhu.findMatchingCommands(props.input);
+      const list = karhu.findMatchingCommands(input);
       setCommandsList(list);
     },
-    [props.input],
+    [input],
   );
 
   const exec = (id: string): EntryGraph => {
-    if (!karhu) {
-      throw new Error('Karhu not found');
-    }
-    return karhu.runCommand(id, props.input);
+    return karhu.runCommand(id, input);
   };
 
   return { commandsList, exec };
 }
 
+type Props = {
+  children: (obj: ChildrenProviderObject) => JSX.Element;
+  input: string;
+};
 export function KarhuComponent(props: Props) {
   const { children } = props;
-  const { exec, commandsList } = useKarhu(props);
+  const { exec, commandsList } = useKarhu(props.input);
   return children({ commandsList, exec });
 }
 

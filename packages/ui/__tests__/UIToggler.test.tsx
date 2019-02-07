@@ -1,14 +1,16 @@
 import React from 'react';
-import { render, fireEvent } from 'react-testing-library';
+import { render, fireEvent, act } from 'react-testing-library';
 import { UIToggler } from '../src';
 import { ESCAPE_PRESS, OUTSIDE_CLICK, COMMAND_EXECUTION } from '../src/UIToggler';
+require('react-testing-library/cleanup-after-each');
 
 describe('UIToggler', () => {
   const shouldOpen = (e: KeyboardEvent) => {
     return e.metaKey && e.keyCode === 75;
   };
-  const shouldClose = jest.fn(() => true);
+
   test('changes open state on hotkeys', () => {
+    const shouldClose = jest.fn(() => true);
     const My = ({ open } = { open: false }) => {
       if (open) {
         return <div>hello</div>;
@@ -16,12 +18,11 @@ describe('UIToggler', () => {
       return null;
     };
 
-    const { container, queryByText, getByText } = render(
+    const { rerender, container, queryByText, getByText } = render(
       <UIToggler shouldOpen={shouldOpen} shouldClose={shouldClose}>
         {props => <My open={props.open} />}
       </UIToggler>,
     );
-
     // Then
     expect(queryByText('hello')).toBeNull();
 
@@ -32,6 +33,11 @@ describe('UIToggler', () => {
       keyCode: 75,
     });
 
+    rerender(
+      <UIToggler shouldOpen={shouldOpen} shouldClose={shouldClose}>
+        {props => <My open={props.open} />}
+      </UIToggler>,
+    );
     // Then
     expect(getByText('hello')).not.toBeNull();
 
@@ -40,12 +46,13 @@ describe('UIToggler', () => {
     fireEvent.keyDown(container, {
       keyCode: 27,
     });
+
     // Then
     expect(shouldClose).toHaveBeenCalledWith(ESCAPE_PRESS);
     expect(queryByText('hello')).toBeNull();
   });
   test('calls shouldClose on clicks outside', () => {
-    shouldClose.mockClear();
+    const shouldClose = jest.fn(() => true);
     class My extends React.Component<any> {
       render() {
         if (this.props.open) {
@@ -93,8 +100,8 @@ describe('UIToggler', () => {
     expect(shouldClose).toHaveBeenCalledWith(OUTSIDE_CLICK);
     expect(queryByText('inner')).toBeNull();
   });
-  test('calls shouldClose whan calling onExec', () => {
-    shouldClose.mockClear();
+  test('calls shouldClose when calling onExec', () => {
+    const shouldClose = jest.fn(() => true);
     let innerExecFn: any = null;
     const My = (props: any) => {
       if (props.open) {
@@ -127,7 +134,7 @@ describe('UIToggler', () => {
 
     // When
     // Call onExecFn
-    innerExecFn();
+    act(() => innerExecFn());
 
     // Then
     expect(shouldClose).toHaveBeenCalledWith(COMMAND_EXECUTION);

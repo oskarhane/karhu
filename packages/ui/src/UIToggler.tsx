@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useRef, RefObject } from 'react';
 import { EntryGraph } from '@karhu/core/lib/types';
 
 export const ESCAPE_PRESS = 'ESCAPE_PRESS';
@@ -16,78 +16,81 @@ type Props = {
   children: (props: RenderProps) => JSX.Element;
 };
 
-type State = {
-  open: boolean;
-};
-
 export type RenderProps = {
   open: boolean;
   onExec: (entryGraph: EntryGraph) => void;
-  setUIRef: (el: HTMLElement) => void;
+  setUIRef: RefObject<HTMLElement>;
 };
 
-export default class Toggler extends React.Component<Props, State> {
-  public ref: any;
-  state = {
-    open: false,
-  };
-  public componentDidMount() {
-    this.ref = React.createRef();
-    window.addEventListener('keydown', this.handleKeyPress);
-  }
-  public componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyPress);
-  }
-  componentDidUpdate(_: Props, prevState: State) {
-    if (prevState.open === this.state.open) {
-      return;
-    }
-    if (this.state.open) {
-      document.addEventListener('click', this.handleOutsideClick);
-    } else {
-      document.removeEventListener('click', this.handleOutsideClick);
-    }
-  }
-  public handleOutsideClick = (e: any) => {
-    if (!this.state.open) {
+function useEventListener(type: string, handler: EventListener | EventListenerObject) {
+  // @ts-ignore
+  const savedHandler = useRef<EventListener | EventListenerObject>();
+  useEffect(
+    () => {
+      // @ts-ignore
+      savedHandler.current = handler;
+    },
+    [handler],
+  );
+  useEffect(
+    () => {
+      // @ts-ignore
+      const currentHandler = evt => savedHandler.current(evt);
+      window.addEventListener(type, currentHandler);
+      return function cleanup() {
+        window.removeEventListener(type, currentHandler);
+      };
+    },
+    [type],
+  );
+}
+
+function useToggler(props: Props) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+
+  useEventListener('keydown', handleKeyPress);
+  useEventListener('click', handleOutsideClick);
+
+  function handleOutsideClick(e: any) {
+    if (!open || !ref || !ref.current) {
       return;
     }
     const target = e.target;
-    if (target !== this.ref.current && !this.ref.current.contains(target)) {
-      this.close(OUTSIDE_CLICK);
+    if (target !== ref.current && !ref.current.contains(target)) {
+      close(OUTSIDE_CLICK);
       return;
     }
-  };
-  public handleKeyPress = (e: KeyboardEvent) => {
+  }
+
+  function handleKeyPress(e: any) {
     const { metaKey, ctrlKey, altKey, keyCode } = e;
     // Esc = close
-    if (this.state.open && keyCode === 27) {
+    if (open && keyCode === 27) {
       e.preventDefault();
-      this.close(ESCAPE_PRESS);
+      close(ESCAPE_PRESS);
       return;
     }
-
     // Require at least one meta key
     if (!metaKey && !ctrlKey && !altKey) {
       return;
     }
-
-    if (!this.state.open && this.props.shouldOpen(e)) {
+    if (!open && props.shouldOpen(e)) {
       e.preventDefault();
-      this.setState({ open: true });
+      setOpen(true);
       return;
     }
-  };
-  public close = (type: CloseTypes) => {
-    if (!this.props.shouldClose || this.props.shouldClose(type)) {
-      this.setState({ open: false });
-    }
-  };
-  render() {
-    if (!this.state.open) {
-      return null;
-    }
-    const renderProps: RenderProps = { open: this.state.open, onExec: () => this.close(COMMAND_EXECUTION), setUIRef: this.ref };
-    return this.props.children(renderProps)
   }
+
+  function close(type: CloseTypes) {
+    if (!props.shouldClose || props.shouldClose(type)) {
+      setOpen(false);
+    }
+  }
+  return { open, onExec: () => close(COMMAND_EXECUTION), setUIRef: ref };
+}
+
+export default function Toggler(props: Props) {
+  const renderProps: RenderProps = useToggler(props);
+  return !open ? null : props.children(renderProps);
 }

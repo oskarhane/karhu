@@ -3,6 +3,6 @@ const base = require('../../jest.config.base.js');
 module.exports = {
   ...base,
   setupFilesAfterEnv: ['../../setup-tests.js'],
-  name: 'react-karhu',
-  displayName: 'react-karhu',
+  name: 'ui',
+  displayName: 'ui',
 };

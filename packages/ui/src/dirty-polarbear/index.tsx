@@ -1,5 +1,5 @@
-import React, { ReactEventHandler } from 'react';
-import { KarhuComponent } from '@karhu/react';
+import React, { ReactEventHandler, useRef, useEffect, useState } from 'react';
+import { useKarhu } from '@karhu/react';
 import CommandList from './CommandList';
 import { MainElement, MainInput } from './styled';
 import { EntryGraph } from '@karhu/core/lib/types';
@@ -9,17 +9,15 @@ interface InputProps {
   value: string;
 }
 
-class Input extends React.Component<InputProps> {
-  inputRef = React.createRef<HTMLInputElement>();
-  public componentDidMount() {
-    if (this.inputRef && this.inputRef.current) {
-      this.inputRef.current.select();
-      this.inputRef.current.focus();
+function Input(props: InputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef && inputRef.current) {
+      inputRef.current.select();
+      inputRef.current.focus();
     }
-  }
-  public render() {
-    return <MainInput type="text" ref={this.inputRef} onChange={this.props.onChange} value={this.props.value} />;
-  }
+  }, []);
+  return <MainInput type="text" ref={inputRef} onChange={props.onChange} value={props.value} />;
 }
 
 interface Props {
@@ -27,43 +25,32 @@ interface Props {
   setUIRef?: any;
   open: boolean;
 }
-interface State {
-  input: string;
-}
 
-class DirtyPolarBear extends React.Component<Props, State> {
-  public state: State = {
-    input: '',
-  };
-  public inputChange = (e: any) => {
+function DirtyPolarBear(props: Props) {
+  const [input, setInput] = useState('');
+  const { commandsList, exec } = useKarhu(input);
+
+  const inputChange = (e: any) => {
     const input = e.target.value;
-    this.setState({ input });
+    setInput(input);
   };
-  public render() {
-    if (!this.props.open) {
-      return null;
+  const onExec = (id: string) => {
+    const entryGraph: EntryGraph = exec(id);
+    if (props.onExec) {
+      props.onExec(entryGraph);
     }
-    return (
-      <KarhuComponent input={this.state.input}>
-        {({ commandsList, exec }) => {
-          const onExec = (id: string) => {
-            const entryGraph: EntryGraph = exec(id);
-            if (this.props.onExec) {
-              this.props.onExec(entryGraph);
-            }
-          };
-          return (
-            <MainElement data-testid="dpb" ref={this.props.setUIRef}>
-              <div>
-                <Input value={this.state.input} onChange={this.inputChange} />
-              </div>
-              <CommandList onExec={onExec} commands={commandsList} />
-            </MainElement>
-          );
-        }}
-      </KarhuComponent>
-    );
+  };
+  if (!props.open) {
+    return null;
   }
+  return (
+    <MainElement data-testid="dpb" ref={props.setUIRef}>
+      <div>
+        <Input value={input} onChange={inputChange} />
+      </div>
+      <CommandList onExec={onExec} commands={commandsList} />
+    </MainElement>
+  );
 }
 
 export default DirtyPolarBear;
