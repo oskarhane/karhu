@@ -15,8 +15,8 @@
   "peerDependencies": {
     "@karhu/core": "*",
     "@karhu/react": "*",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3"
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
   },
   "dependencies": {
     "@emotion/core": "^10.0.5",
@@ -25,10 +25,14 @@
     "@karhu/react": "^0.6.0"
   },
   "devDependencies": {
-    "@types/react": "^16.7.6",
-    "@types/react-dom": "^16.0.9",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3"
+    "@types/jest": "^24.0.0",
+    "@types/react": "^16.8.2",
+    "@types/react-dom": "^16.8.0",
+    "jest": "^24.1.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "react-testing-library": "^5.5.3",
+    "ts-jest": "^23.10.5"
   },
   "directories": {
     "lib": "lib",

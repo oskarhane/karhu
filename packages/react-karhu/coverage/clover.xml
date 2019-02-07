@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1549531285415" clover="3.2.0">
+  <project timestamp="1549531285415" name="All files">
+    <metrics statements="24" coveredstatements="23" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6" elements="30" coveredelements="29" complexity="0" loc="24" ncloc="24" packages="1" files="1" classes="1"/>
+    <file name="index.tsx" path="/Users/oskarhane/Development/karhu/packages/react-karhu/src/index.tsx">
+      <metrics statements="24" coveredstatements="23" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="19" count="11" type="stmt"/>
+      <line num="22" count="11" type="stmt"/>
+      <line num="23" count="11" type="stmt"/>
+      <line num="30" count="14" type="stmt"/>
+      <line num="31" count="14" type="stmt"/>
+      <line num="33" count="14" type="stmt"/>
+      <line num="35" count="0" type="stmt"/>
+      <line num="37" count="1" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+      <line num="40" count="14" type="stmt"/>
+      <line num="42" count="7" type="stmt"/>
+      <line num="43" count="7" type="stmt"/>
+      <line num="48" count="14" type="stmt"/>
+      <line num="56" count="1" type="stmt"/>
+      <line num="57" count="14" type="stmt"/>
+      <line num="58" count="14" type="stmt"/>
+      <line num="59" count="14" type="stmt"/>
+      <line num="62" count="1" type="stmt"/>
+      <line num="63" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

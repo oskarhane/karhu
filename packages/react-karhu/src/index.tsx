@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Karhu from '@karhu/core';
 import { Command, UnregisteredCommand, EntryGraph } from '@karhu/core/lib/types';
 
-const karhu = new Karhu();
-
-const KarhuContext = React.createContext(karhu);
+type KarhuContextProps = { karhu: Karhu };
+const KarhuContext = React.createContext<Partial<KarhuContextProps>>({});
 
 type ChildrenProviderObject = {
   commandsList: Command[];
@@ -16,42 +15,53 @@ type AddCommandProps = {
 };
 
 export const AddCommand = (props: AddCommandProps) => {
-  return (
-    <Consumer>
-      {karhu => {
-        karhu.addCommand(props.command);
-        return null;
-      }}
-    </Consumer>
-  );
+  const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
+  const { karhu } = karhuContext;
+
+  useEffect(() => {
+    if (karhu) {
+      karhu.addCommand(props.command);
+    }
+  }, []);
+
+  return null;
 };
 
 type Props = {
-  children: (obj: ChildrenProviderObject) => {};
+  children: (obj: ChildrenProviderObject) => JSX.Element;
   input: string;
 };
-export class KarhuComponent extends React.Component<Props> {
-  karhu?: Karhu;
-  exec = (id: string): EntryGraph => {
-    if (!this.karhu) {
+
+export function useKarhu(props: Props) {
+  const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
+  const { karhu } = karhuContext;
+  const [commandsList, setCommandsList] = useState<Command[]>([]);
+
+  useEffect(
+    () => {
+      if (!karhu) {
+        throw new Error('Karhu not found');
+      }
+      const list = karhu.findMatchingCommands(props.input);
+      setCommandsList(list);
+    },
+    [props.input],
+  );
+
+  const exec = (id: string): EntryGraph => {
+    if (!karhu) {
       throw new Error('Karhu not found');
     }
-    const tree: EntryGraph = this.karhu.runCommand(id, this.props.input);
-    return tree;
+    return karhu.runCommand(id, props.input);
   };
-  render() {
-    const { children } = this.props;
-    const { exec } = this;
-    return (
-      <Consumer>
-        {(karhu: Karhu) => {
-          this.karhu = karhu;
-          const commandsList = this.karhu.findMatchingCommands(this.props.input);
-          return children({ commandsList, exec });
-        }}
-      </Consumer>
-    );
-  }
+
+  return { commandsList, exec };
+}
+
+export function KarhuComponent(props: Props) {
+  const { children } = props;
+  const { exec, commandsList } = useKarhu(props);
+  return children({ commandsList, exec });
 }
 
 const { Provider, Consumer } = KarhuContext;

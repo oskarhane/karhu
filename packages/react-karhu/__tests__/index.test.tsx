@@ -4,11 +4,54 @@ import Karhu from '@karhu/core';
 import { KarhuComponent, KarhuProvider, AddCommand } from '../src/index';
 import { EntryGraph } from '@karhu/core/src/types';
 
+describe('Errors', () => {
+  function onError(e: Event) {
+    e.preventDefault();
+  }
+
+  beforeEach(() => {
+    window.addEventListener('error', onError);
+  });
+
+  afterEach(() => {
+    window.removeEventListener('error', onError);
+  });
+
+  test('throws if no karhu in context', () => {
+    class MyCatch extends React.Component {
+      state = {
+        error: '',
+      };
+      componentDidCatch(error: Error) {
+        this.setState({ error });
+      }
+      render() {
+        if (!this.state.error) {
+          return this.props.children;
+        }
+        return <div>{this.state.error.toString()}</div>;
+      }
+    }
+
+    // When
+    const { getByText } = render(
+      <div>
+        <MyCatch>
+          <KarhuComponent input="">{() => <div />}</KarhuComponent>
+        </MyCatch>
+      </div>,
+    );
+
+    // Then
+    expect(getByText(/Karhu not found/)).toBeDefined();
+  });
+});
+
 test('renders children', () => {
   const karhu = new Karhu();
   const MyComp = <h1>hello</h1>;
   const { getByText } = render(
-    <KarhuProvider value={karhu}>
+    <KarhuProvider value={{ karhu }}>
       <KarhuComponent input="">
         {() => {
           return MyComp;
@@ -53,7 +96,7 @@ test('updates matching command list when prop input changes', () => {
   );
   const tree = (props: any) => {
     return (
-      <KarhuProvider value={karhu}>
+      <KarhuProvider value={{ karhu }}>
         <AddCommand command={command1} />
         <AddCommand command={command2} />
         <KarhuComponent input={props.input}>
@@ -137,7 +180,7 @@ test('exec returns the entry graph', () => {
 
   // When
   render(
-    <KarhuProvider value={karhu}>
+    <KarhuProvider value={{ karhu }}>
       <AddCommand command={command1} />
       <KarhuComponent input="f">
         {({ exec }) => {
