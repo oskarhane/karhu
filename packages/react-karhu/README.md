@@ -11,7 +11,7 @@ npm install @karhu/core @karhu/react
 ## Usage
 
 ```js
-import { KarhuProvider, KarhuComponent, AddCommand } from '@karhu/react';
+import { KarhuProvider, useKarhu, KarhuComponent, AddCommand } from '@karhu/react';
 ```
 
 ## Hooks
