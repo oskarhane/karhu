@@ -15,6 +15,10 @@ type Props = {
   shouldClose?: (type: CloseTypes) => boolean;
   children: (props: RenderProps) => JSX.Element;
 };
+type HookProps = {
+  shouldOpen: (e: KeyboardEvent) => boolean;
+  shouldClose?: (type: CloseTypes) => boolean;
+};
 
 export type RenderProps = {
   open: boolean;
@@ -45,7 +49,7 @@ function useEventListener(type: string, handler: EventListener | EventListenerOb
   );
 }
 
-export function useToggler(props: Props) {
+export function useToggler(props: HookProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
@@ -92,5 +96,5 @@ export function useToggler(props: Props) {
 
 export default function Toggler(props: Props) {
   const renderProps: RenderProps = useToggler(props);
-  return !open ? null : props.children(renderProps);
+  return !renderProps.open ? null : props.children(renderProps);
 }
