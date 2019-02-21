@@ -42,6 +42,10 @@ import { AddCommand } from '@karhu/react';
 import { EntryGraph } from '@karhu/core/lib/types';
 import { DirtyPolarBear, useToggler } from '@karhu/ui';
 
+function shouldOpen(e: KeyboardEvent): boolean {
+  return (e.metaKey || e.ctrlKey) && e.keyCode === 75; // Open with cmd/ctrl + k
+}
+
 function MyKarhu() {
   const togglerProps = useToggler({ shouldOpen });
   const onExec = (entryGraph: EntryGraph) => {
