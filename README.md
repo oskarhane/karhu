@@ -16,10 +16,8 @@ Karhu is a productivity tool for rich web applications. Think of it as macOS's S
 
 Your applicaiton registers commands and Karhu takes care of listing them for user searches and executes them when the user wants to.
 
-Karhu also learns the users habit over time and lists commonly executed
+Karhu also **learns** the **users habits over time** and ranks commonly executed
 commands higher for the user inputs.
-
-Example implementations will be added to this repo in the future.
 
 ## What's in this repo
 
@@ -27,21 +25,61 @@ In this repository are two packages:
 
 - `@karhu/core` - The main functionality. No UI.
 - `@karhu/react` - Bindings for [React](https://reactjs.org)
+- `@karhu/ui` - Example user interfaces
 
 Please see their respictive README's under the `packages` dir in the source code above.
 
-## What's NOT in this repo
+## How to use the example UI
 
-There's **NO** UI provided at this point. The way the React bindings are made it's super easy for developers to add their own UI to it.
+First, let's create a new component that uses the example UI.  
+It's very easy to create your own UI, please have a look in the playground folder or how
+the example UI is implemented.
 
-There's also no default commands added to Karhu. Application developers
-must add their own commands for Karhu to be useful.
+```js
+// MyComponent.tsx
+function MyKarhu() {
+  const togglerProps = useToggler({ shouldOpen });
+  const onExec = (entryGraph: EntryGraph) => {
+    console.log('entryGraph: ', entryGraph);
+    togglerProps.onExec();
+  };
+  return (
+    <React.Fragment>
+      {commands.map(command => (
+        <AddCommand key={command.name} command={command} />
+      ))}
+      <DirtyPolarBear open={togglerProps.open} setUIRef={togglerProps.setUIRef} onExec={onExec} />
+    </React.Fragment>
+  );
+}
+
+export default MyKarhu;
+```
+
+Then add it to your app
+
+```js
+// App.tsx
+
+const karhu: Karhu = new Karhu({}, 100);
+
+function App() {
+  return (
+    <KarhuProvider value={{ karhu }}>
+      <div className="App">
+        <h2>Press cmd+k to open Karhu</h2>
+        <MyKarhu />
+      </div>
+    </KarhuProvider>
+  );
+}
+```
 
 ## In action with example UI
 
 Example UI with a cosy bear on top of a default React app.
 
-![bear](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/k2-Eh1xwaA1JP/k2.gif)
+![bear](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/karhu-readme-LHFpVDuniH/karhu-readme.gif)
 
 [build-badge]: https://img.shields.io/travis/oskarhane/karhu.svg?style=flat-square
 [build]: https://travis-ci.org/oskarhane/karhu
