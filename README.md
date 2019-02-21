@@ -45,3 +45,17 @@ Example UI with a cosy bear on top of a default React app.
 
 [build-badge]: https://img.shields.io/travis/oskarhane/karhu.svg?style=flat-square
 [build]: https://travis-ci.org/oskarhane/karhu
+
+# Development
+
+To successfully run this with the playground and eveything, all packages needs to have the same
+version of all dependencies and they need to be hoised to the root when bootstrapping with lerna.
+
+To clean, hoist and bootstrap:
+
+```
+npx lerna clean -y && npx lerna bootstrap --hoist
+```
+
+That is usually only needed to be done once.
+After that, just executing `npx lerna bootstrap --hoist` should be enough.
