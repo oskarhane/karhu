@@ -45,7 +45,7 @@ function useEventListener(type: string, handler: EventListener | EventListenerOb
   );
 }
 
-function useToggler(props: Props) {
+export function useToggler(props: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
