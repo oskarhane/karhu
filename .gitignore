@@ -5,6 +5,10 @@ node_modules
 /.pnp
 .pnp.js
 
+# testing
+coverage
+packages/*/coverage
+
 # production
 build
 packages/*/lib
