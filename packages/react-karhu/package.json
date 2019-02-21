@@ -1,6 +1,6 @@
 {
   "name": "@karhu/react",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "React bindings and components for Karhu",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
     "react-dom": "^16.8.2"
   },
   "dependencies": {
-    "@karhu/core": "^0.6.0"
+    "@karhu/core": "^0.7.0"
   },
   "directories": {
     "lib": "lib",
