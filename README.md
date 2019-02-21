@@ -36,7 +36,7 @@ It's very easy to create your own UI, please have a look in the playground folde
 the example UI is implemented.
 
 ```js
-// MyComponent.tsx
+// MyKarhu.tsx
 function MyKarhu() {
   const togglerProps = useToggler({ shouldOpen });
   const onExec = (entryGraph: EntryGraph) => {
