@@ -14,6 +14,50 @@ npm install @karhu/core @karhu/react
 import { KarhuProvider, KarhuComponent, AddCommand } from '@karhu/react';
 ```
 
+## Hooks
+
+### `useKarhu`
+
+A React hook to access Karhu context and Karhu adapter.
+Expects to find a `Karhu` instance in application context.
+
+On every property `input` change the `commandsList` is updated.
+
+Call `exec` with a command id to execute the command and get the entry
+graph back.
+
+Types:
+
+```tsx
+// Props
+type Props = {
+  input: string;
+};
+
+// Returns
+type ChildrenProviderObject = {
+  commandsList: Command[];
+  exec: (id: string) => EntryGraph;
+};
+```
+
+Usage:
+
+```tsx
+
+function MyKarhu({input}) {
+  const { exec, commandsList } = useKarhu(input);
+  return 'your-ui'
+}
+
+const karhu = new Karhu()
+
+<KarhuProvider value={karhu}>
+  <MyKarhu input="">
+  </KarhuComponent>
+</KarhuProvider>
+```
+
 ## Components
 
 ### `<KarhuProvider>`
