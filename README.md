@@ -37,6 +37,11 @@ the example UI is implemented.
 
 ```js
 // MyKarhu.tsx
+import React from 'react';
+import { AddCommand } from '@karhu/react';
+import { EntryGraph } from '@karhu/core/lib/types';
+import { DirtyPolarBear, useToggler } from '@karhu/ui';
+
 function MyKarhu() {
   const togglerProps = useToggler({ shouldOpen });
   const onExec = (entryGraph: EntryGraph) => {
