@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { KarhuProvider } from '@karhu/react';
 import Karhu from '@karhu/core';
 
