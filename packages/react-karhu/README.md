@@ -53,8 +53,7 @@ function MyKarhu({input}) {
 const karhu = new Karhu()
 
 <KarhuProvider value={karhu}>
-  <MyKarhu input="">
-  </KarhuComponent>
+  <MyKarhu input="" />
 </KarhuProvider>
 ```
 
