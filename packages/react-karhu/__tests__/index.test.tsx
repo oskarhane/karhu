@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { render } from 'react-testing-library';
 import Karhu from '@karhu/core';
-import { KarhuComponent, KarhuProvider, AddCommand } from '../src/index';
+import { KarhuComponent, KarhuProvider, AddCommand, KarhuContext } from '../src/index';
 import { EntryGraph } from '@karhu/core/src/types';
 
 describe('Errors', () => {
@@ -194,4 +194,26 @@ test('exec returns the entry graph', () => {
 
   // Then
   expect(eg).toEqual({ next: { f: { commands: [{ calls: 1, id: 'c1' }] } } });
+});
+
+test('exposes context object', () => {
+  // Given
+  const karhu = new Karhu();
+  let componentKarhu;
+
+  const MyComp = () => {
+    const context = useContext(KarhuContext);
+    componentKarhu = context.karhu;
+    return null;
+  };
+
+  // When
+  render(
+    <KarhuProvider value={{ karhu }}>
+      <MyComp />
+    </KarhuProvider>,
+  );
+
+  // Then
+  expect(karhu).toBe(componentKarhu);
 });

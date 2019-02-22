@@ -61,4 +61,4 @@ export function KarhuComponent(props: Props) {
 }
 
 const { Provider, Consumer } = KarhuContext;
-export { Provider as KarhuProvider, Consumer as KarhuConsumer };
+export { Provider as KarhuProvider, Consumer as KarhuConsumer, KarhuContext };
