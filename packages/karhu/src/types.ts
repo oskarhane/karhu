@@ -1,5 +1,3 @@
-import Karhu from '.';
-
 export interface UnregisteredCommand {
   id?: string;
   name: string;
@@ -49,12 +47,29 @@ export type EntryGraphCommandsSummary = {
 };
 
 export interface ActionsObject {
-  onExec: (karhu: Karhu) => void;
+  onExec: (execProps: ExecProps) => AfterExec;
   onShow?: (id: string) => void;
+}
+
+export interface ExecProps {
+  enterContext: (id: string) => void;
+}
+
+export enum AfterExec {
+  CLOSE = 'CLOSE',
+  CLEAR_INPUT = 'CLEAR_INPUT',
+  KEEP = 'KEEP',
+  NOOP = 'NOOP',
 }
 
 export interface KarhuContext {
   id: string;
   title: string;
   description: string;
+}
+
+export interface CommandRunResult {
+  entryGraph: EntryGraph;
+  open: boolean;
+  input: string;
 }

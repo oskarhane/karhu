@@ -1,5 +1,5 @@
 import Karhu from '../src';
-import { UnregisteredCommand, Command, EntryGraph, ActionsObject } from '../src/types';
+import { UnregisteredCommand, Command, EntryGraph, ActionsObject, AfterExec } from '../src/types';
 import { MATCH_ALL } from '../src/utils';
 
 describe('Karhu', () => {
@@ -135,7 +135,8 @@ describe('Karhu', () => {
     karhu.addCommand(startsMatch);
     karhu.addCommand(containsMatch);
     karhu.addCommand(exactMatch);
-    const res: Command[] = karhu.findMatchingCommands(input);
+    karhu.setInput(input);
+    const res: Command[] = karhu.findMatchingCommands();
 
     // Then
     expect(res).toHaveLength(3); // Filters out unmatched ones
@@ -167,19 +168,19 @@ describe('Karhu', () => {
     karhu.addCommand(c2);
 
     // Run command so it's in the entry graph
-    karhu.runCommand(c2.id, input);
+    karhu.setInput(input);
+    karhu.runCommand(c2.id);
 
     // Remove the command
     karhu.removeCommand(c2.id);
 
     // Find matches
-    const res2: Command[] = karhu.findMatchingCommands(input);
+    const res2: Command[] = karhu.findMatchingCommands();
 
     // Then
     expect(res2).toHaveLength(1);
   });
   test('findMatchingCommands is context aware', () => {
-    jest.useFakeTimers(); // because we execute the action async
     // Given
     const input: string = 'open';
     const context = 'deep-context';
@@ -195,7 +196,12 @@ describe('Karhu', () => {
       id: 'c2',
       name: 'hello',
       keywords: ['open'],
-      actions: { onExec: k => k.enterContext(context) }, // enter context on exec
+      actions: {
+        onExec: k => {
+          k.enterContext(context);
+          return AfterExec.NOOP;
+        },
+      }, // enter context on exec
       render: () => '',
     });
     const always: Command = Karhu.createCommand({
@@ -214,18 +220,18 @@ describe('Karhu', () => {
     karhu.addCommand(always);
 
     // Find matches
-    let res = karhu.findMatchingCommands(input);
+    karhu.setInput(input);
+    let res = karhu.findMatchingCommands();
 
     // Then
     expect(res).toHaveLength(2);
     expect(res[0].id).toBe(c2.id);
 
     // When enter context (see onExec above)
-    karhu.runCommand(res[0].id, input);
-    jest.runOnlyPendingTimers();
+    karhu.runCommand(res[0].id);
 
     // Then find matches again
-    res = karhu.findMatchingCommands(input);
+    res = karhu.findMatchingCommands();
 
     // Then
     expect(res).toHaveLength(2);
@@ -235,7 +241,7 @@ describe('Karhu', () => {
     karhu.resetContext();
 
     // Then find matches again
-    res = karhu.findMatchingCommands(input);
+    res = karhu.findMatchingCommands();
 
     // Then
     expect(res).toHaveLength(2);
@@ -246,14 +252,14 @@ describe('Karhu', () => {
     const input: string = 'test';
 
     // When
-    const res: EntryGraph = karhu.runCommand(id, input);
+    karhu.setInput(input);
+    const { entryGraph: res } = karhu.runCommand(id);
 
     // Then
     expect(res).toEqual({});
   });
   test('runCommand run the command and return the entryGraph', () => {
     // Given
-    jest.useFakeTimers(); // because we execute the action async
     const input: string = 'yo';
     let noMatch: Command = Karhu.createCommand({
       id: 'no',
@@ -273,8 +279,8 @@ describe('Karhu', () => {
     // When
     noMatch = karhu.addCommand(noMatch);
     startsMatch = karhu.addCommand(startsMatch);
-    const res: EntryGraph = karhu.runCommand(startsMatch.id, input);
-    jest.runOnlyPendingTimers();
+    karhu.setInput(input);
+    const { entryGraph: res } = karhu.runCommand(startsMatch.id);
 
     // Then
     expect(startsMatch.actions.onExec).toHaveBeenCalledTimes(1);
@@ -294,7 +300,6 @@ describe('Karhu', () => {
   });
   test('moves ran commands to top of list', () => {
     // Given
-    jest.useFakeTimers(); // because we execute the action async
     const input: string = 'yo';
     let containsMatch: Command = Karhu.createCommand({
       id: 'contains',
@@ -314,32 +319,30 @@ describe('Karhu', () => {
     // When
     containsMatch = karhu.addCommand(containsMatch);
     startsMatch = karhu.addCommand(startsMatch);
-    let list = karhu.findMatchingCommands(input);
+    karhu.setInput(input);
+    let list = karhu.findMatchingCommands();
 
     // Then
     expect(list.map(item => item.id)).toEqual([startsMatch.id, containsMatch.id]);
 
     // When
-    karhu.runCommand(containsMatch.id, input);
-    jest.runOnlyPendingTimers();
-    list = karhu.findMatchingCommands(input);
+    karhu.runCommand(containsMatch.id);
+    list = karhu.findMatchingCommands();
 
     // Then
     expect(list.map(item => item.id)).toEqual([startsMatch.id, containsMatch.id]);
 
     // When
     // This time the score for history will pass starts
-    karhu.runCommand(containsMatch.id, input);
-    karhu.runCommand(containsMatch.id, input);
-    jest.runOnlyPendingTimers();
-    list = karhu.findMatchingCommands(input);
+    karhu.runCommand(containsMatch.id);
+    karhu.runCommand(containsMatch.id);
+    list = karhu.findMatchingCommands();
 
     // Then
     expect(list.map(item => item.id)).toEqual([containsMatch.id, startsMatch.id]);
   });
   test('onShow is called when a command is listed', () => {
     // Given
-    jest.useFakeTimers(); // because we execute the action async
     const input: string = 'yo';
     let noMatch: Command = Karhu.createCommand({
       id: 'no',
@@ -359,7 +362,8 @@ describe('Karhu', () => {
     // When
     noMatch = karhu.addCommand(noMatch);
     startsMatch = karhu.addCommand(startsMatch);
-    karhu.findMatchingCommands(input);
+    karhu.setInput(input);
+    karhu.findMatchingCommands();
 
     // Then
     expect(noMatch.actions.onShow).toHaveBeenCalledTimes(0);

@@ -7,11 +7,15 @@ import {
   MatchClass,
   EntryGraph,
   KarhuContext,
+  AfterExec,
+  CommandRunResult,
 } from './types';
 import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, matchesContext } from './utils';
 
 export default class Karhu {
   static currentId: number = 0;
+  open: boolean = false;
+  input: string = '';
   commands: Command[] = [];
   entryGraph: EntryGraph = {};
   historyCallLimit: number = 30;
@@ -33,6 +37,8 @@ export default class Karhu {
     this.commands = [];
     this.entryGraph = {};
     this.currentContext = undefined;
+    this.open = false;
+    this.input = '';
   }
 
   addCommand(command: UnregisteredCommand): Command {
@@ -89,12 +95,16 @@ export default class Karhu {
     this.currentContext = undefined;
   }
 
-  findMatchingCommands(input?: string): Command[] {
-    let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, input);
+  setInput(str: string) {
+    this.input = str;
+  }
+
+  findMatchingCommands(): Command[] {
+    let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, this.input);
 
     classifiedMatches = classifiedMatches.filter(m => m.score !== MatchClass.NO);
 
-    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, input);
+    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, this.input);
     if (historyCommands.length) {
       classifiedMatches.unshift(...historyCommands);
     }
@@ -114,15 +124,30 @@ export default class Karhu {
     return commands;
   }
 
-  runCommand(id: string, input: string): EntryGraph {
+  runCommand(id: string): CommandRunResult {
     const command = this._getCommandById(id);
     if (!command) {
-      return this.entryGraph;
+      return { entryGraph: this.entryGraph, open: true, input: this.input };
     }
-    this.entryGraph = updateEntryGraph(this.entryGraph, input, id, this.historyCallLimit);
-    setTimeout(() => command.actions.onExec(this), 0);
+    const execResult = command.actions.onExec({ enterContext: this.enterContext.bind(this) });
+    this.entryGraph = updateEntryGraph(this.entryGraph, this.input, id, this.historyCallLimit);
     this._recordRunCommand(id);
-    return this.entryGraph;
+    this._handleExecResult(execResult);
+    return { entryGraph: this.entryGraph, open: this.open, input: this.input };
+  }
+
+  _handleExecResult(execResult: AfterExec): void {
+    if (execResult === AfterExec.CLEAR_INPUT) {
+      this.input = '';
+    }
+    this.open = this._shouldStayOpen(execResult);
+  }
+
+  _shouldStayOpen(execResult: AfterExec): boolean {
+    if (execResult === AfterExec.CLOSE) {
+      return false;
+    }
+    return true;
   }
 
   _getCommandById(id: string): Command | undefined {
