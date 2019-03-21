@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { render } from 'react-testing-library';
 import Karhu from '@karhu/core';
 import { KarhuComponent, KarhuProvider, AddCommand, KarhuContext } from '../src/index';
-import { EntryGraph } from '@karhu/core/src/types';
+import { AfterExec } from '@karhu/core/src/types';
 
 describe('Errors', () => {
   function onError(e: Event) {
@@ -71,7 +71,9 @@ test('updates matching command list when prop input changes', () => {
     name: 'first-command',
     keywords: ['first command'],
     actions: {
-      onExec: jest.fn(),
+      onExec: jest.fn(() => {
+        return AfterExec.NOOP;
+      }),
     },
     render: () => {
       return command1.name;
@@ -82,7 +84,9 @@ test('updates matching command list when prop input changes', () => {
     name: 'second-command',
     keywords: ['second command'],
     actions: {
-      onExec: jest.fn(),
+      onExec: jest.fn(() => {
+        return AfterExec.NOOP;
+      }),
     },
     render: () => {
       return command2.name;
@@ -169,7 +173,9 @@ test('exec returns the entry graph', () => {
     name: 'first-command',
     keywords: ['first command'],
     actions: {
-      onExec: jest.fn(),
+      onExec: jest.fn(() => {
+        return AfterExec.NOOP;
+      }),
     },
     render: () => {
       return command1.name;
@@ -190,7 +196,7 @@ test('exec returns the entry graph', () => {
       </KarhuComponent>
     </KarhuProvider>,
   );
-  const eg: EntryGraph = execFn(commandId);
+  const { entryGraph: eg } = execFn(commandId);
 
   // Then
   expect(eg).toEqual({ next: { f: { commands: [{ calls: 1, id: 'c1' }] } } });
