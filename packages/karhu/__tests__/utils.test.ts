@@ -3,21 +3,22 @@ import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } fr
 import Karhu from '../src';
 
 describe('classifyMatches', () => {
-  test('classifies matches', () => {
+  test('classifies matches (including wildcard to match all)', () => {
     // Given
     const input: string = 'yo';
     const noMatch = createCommandWithKeywords(['open door', 'talk loud']);
     const startsMatch = createCommandWithKeywords(['YOLO', 'my man']);
     const containsMatch = createCommandWithKeywords(['LOYO', 'my man']);
     const exactMatch = createCommandWithKeywords(['LOYO', 'yo']);
+    const matchAll = createCommandWithKeywords(['*']);
 
-    const commands = [noMatch, startsMatch, containsMatch, exactMatch];
+    const commands = [noMatch, startsMatch, containsMatch, exactMatch, matchAll];
 
     // When
     const res = classifyMatches(commands, input);
 
     // Then
-    expect(res).toHaveLength(4);
+    expect(res).toHaveLength(5);
     expect(res[0]).toEqual({
       id: noMatch.id,
       score: MatchClass.NO,
@@ -33,6 +34,10 @@ describe('classifyMatches', () => {
     expect(res[3]).toEqual({
       id: exactMatch.id,
       score: MatchClass.EXACT,
+    });
+    expect(res[4]).toEqual({
+      id: matchAll.id,
+      score: Math.ceil(MatchClass.MATCH_ALL),
     });
   });
   it('returns fast if input is longer than keyword', () => {
@@ -69,11 +74,11 @@ describe('classifyMatches', () => {
     expect(res).toHaveLength(3);
     expect(res[0]).toEqual({
       id: partSeparatedMatch.id,
-      score: Math.floor((MatchClass.STARTS + MatchClass.CONTAINS + MatchClass.CONTAINS) / 3),
+      score: Math.ceil((MatchClass.STARTS + MatchClass.CONTAINS + MatchClass.CONTAINS) / 3),
     });
     expect(res[1]).toEqual({
       id: partMultiMatch.id,
-      score: Math.floor((MatchClass.CONTAINS + MatchClass.STARTS + MatchClass.STARTS) / 3),
+      score: Math.ceil((MatchClass.CONTAINS + MatchClass.STARTS + MatchClass.STARTS) / 3),
     });
     expect(res[2]).toEqual({
       id: partNonMatch.id,

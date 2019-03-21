@@ -8,6 +8,8 @@ import {
   EntryGraphCommandsSummary,
 } from './types';
 
+export const MATCH_ALL: string = '*';
+
 export function classifyMatches(commands: Command[], input: string): ClassifiedMatches {
   const normInputWords = input.toLowerCase().split(' ');
   const out: ClassifiedMatches = commands.map(c => {
@@ -18,8 +20,12 @@ export function classifyMatches(commands: Command[], input: string): ClassifiedM
         const kw = rawKw.toLowerCase();
 
         let currentMatch: ClassifiedMatch = noMatch(c.id);
+        // catch wildcard
+        if (kw === MATCH_ALL) {
+          currentMatch = wildcardMatch(c.id);
+        }
         // Too long, no match
-        if (inputWord.length > kw.length) {
+        else if (inputWord.length > kw.length) {
           currentMatch = noMatch(c.id);
         }
         // Exact
@@ -51,7 +57,7 @@ export function classifyMatches(commands: Command[], input: string): ClassifiedM
       }
       totalScore += bestMatch.score;
     }
-    const meanScore: number = Math.floor(totalScore / bestMatches.length);
+    const meanScore: number = Math.ceil(totalScore / bestMatches.length);
     return customMatch(c.id, meanScore);
   });
   return out;
@@ -79,6 +85,12 @@ function containsMatch(id: string): ClassifiedMatch {
   return {
     id,
     score: MatchClass.CONTAINS,
+  };
+}
+function wildcardMatch(id: string): ClassifiedMatch {
+  return {
+    id,
+    score: MatchClass.MATCH_ALL,
   };
 }
 function customMatch(id: string, score: number): ClassifiedMatch {

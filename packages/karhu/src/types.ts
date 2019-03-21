@@ -22,6 +22,7 @@ export enum MatchClass {
   STARTS = 3,
   CONTAINS = 2,
   ACRONYM = 1,
+  MATCH_ALL = 0.5,
   NO = 0,
 }
 
