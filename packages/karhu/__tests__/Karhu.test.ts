@@ -179,6 +179,7 @@ describe('Karhu', () => {
     expect(res2).toHaveLength(1);
   });
   test('findMatchingCommands is context aware', () => {
+    jest.useFakeTimers(); // because we execute the action async
     // Given
     const input: string = 'open';
     const context = 'deep-context';
@@ -194,7 +195,7 @@ describe('Karhu', () => {
       id: 'c2',
       name: 'hello',
       keywords: ['open'],
-      actions: { onExec: jest.fn() },
+      actions: { onExec: k => k.enterContext(context) }, // enter context on exec
       render: () => '',
     });
     const always: Command = Karhu.createCommand({
@@ -219,8 +220,9 @@ describe('Karhu', () => {
     expect(res).toHaveLength(2);
     expect(res[0].id).toBe(c2.id);
 
-    // When enter context
-    karhu.enterContext(context);
+    // When enter context (see onExec above)
+    karhu.runCommand(res[0].id, input);
+    jest.runOnlyPendingTimers();
 
     // Then find matches again
     res = karhu.findMatchingCommands(input);

@@ -1,3 +1,5 @@
+import Karhu from '.';
+
 export interface UnregisteredCommand {
   id?: string;
   name: string;
@@ -47,6 +49,12 @@ export type EntryGraphCommandsSummary = {
 };
 
 export interface ActionsObject {
-  onExec: () => void;
+  onExec: (karhu: Karhu) => void;
   onShow?: (id: string) => void;
+}
+
+export interface KarhuContext {
+  id: string;
+  title: string;
+  description: string;
 }

@@ -6,6 +6,7 @@ import {
   ClassifiedMatch,
   MatchClass,
   EntryGraph,
+  KarhuContext,
 } from './types';
 import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, matchesContext } from './utils';
 
@@ -15,6 +16,7 @@ export default class Karhu {
   entryGraph: EntryGraph = {};
   historyCallLimit: number = 30;
   currentContext: undefined | string;
+  contexts: KarhuContext[] = [];
 
   constructor(entryGraph?: EntryGraph, historyCallLimit?: number) {
     this.reset();
@@ -24,7 +26,6 @@ export default class Karhu {
     if (historyCallLimit !== undefined) {
       this.historyCallLimit = historyCallLimit;
     }
-    this.currentContext = undefined;
   }
 
   reset(): void {
@@ -66,6 +67,20 @@ export default class Karhu {
     return this.entryGraph;
   }
 
+  registerContext(ctx: KarhuContext): void {
+    this.unregisterContext(ctx.id);
+    this.contexts.push(ctx);
+  }
+
+  unregisterContext(id: string) {
+    this.contexts = this.contexts.filter(context => context.id !== id);
+  }
+
+  getContext(id: string): KarhuContext | undefined {
+    const found = this.contexts.find(ctx => ctx.id === id);
+    return found;
+  }
+
   enterContext(newContext: string): void {
     this.currentContext = newContext;
   }
@@ -105,7 +120,7 @@ export default class Karhu {
       return this.entryGraph;
     }
     this.entryGraph = updateEntryGraph(this.entryGraph, input, id, this.historyCallLimit);
-    setTimeout(() => command.actions.onExec(), 0);
+    setTimeout(() => command.actions.onExec(this), 0);
     this._recordRunCommand(id);
     return this.entryGraph;
   }
