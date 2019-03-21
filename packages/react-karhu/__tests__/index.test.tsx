@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { render } from 'react-testing-library';
+import { render, act } from 'react-testing-library';
 import Karhu from '@karhu/core';
 import { KarhuComponent, KarhuProvider, AddCommand, KarhuContext } from '../src/index';
 import { AfterExec } from '@karhu/core/src/types';
@@ -128,7 +128,7 @@ test('updates matching command list when prop input changes', () => {
   expect(queryByTestId('command-list-item')).toBeNull();
 
   // When
-  rerender(tree({ input: 'fir' }));
+  act(() => rerender(tree({ input: 'fir' })));
 
   // Then
   // Match first command

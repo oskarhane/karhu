@@ -31,6 +31,7 @@ export function useKarhu(input: string = ''): ChildrenProviderObject {
   const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
   const { karhu } = karhuContext;
   const [commandsList, setCommandsList] = useState<Command[]>([]);
+
   if (!karhu) {
     throw new Error('Karhu not found');
   }
