@@ -7,13 +7,14 @@ import {
   MatchClass,
   EntryGraph,
 } from './types';
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from './utils';
+import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, matchesContext } from './utils';
 
 export default class Karhu {
   static currentId: number = 0;
   commands: Command[] = [];
   entryGraph: EntryGraph = {};
   historyCallLimit: number = 30;
+  currentContext: undefined | string;
 
   constructor(entryGraph?: EntryGraph, historyCallLimit?: number) {
     this.reset();
@@ -23,12 +24,14 @@ export default class Karhu {
     if (historyCallLimit !== undefined) {
       this.historyCallLimit = historyCallLimit;
     }
+    this.currentContext = undefined;
   }
 
   reset(): void {
     Karhu.currentId = 0;
     this.commands = [];
     this.entryGraph = {};
+    this.currentContext = undefined;
   }
 
   addCommand(command: UnregisteredCommand): Command {
@@ -63,10 +66,15 @@ export default class Karhu {
     return this.entryGraph;
   }
 
+  enterContext(newContext: string): void {
+    this.currentContext = newContext;
+  }
+
+  resetContext(): void {
+    this.currentContext = undefined;
+  }
+
   findMatchingCommands(input?: string): Command[] {
-    if (!input) {
-      return [];
-    }
     let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, input);
 
     classifiedMatches = classifiedMatches.filter(m => m.score !== MatchClass.NO);
@@ -79,7 +87,10 @@ export default class Karhu {
     classifiedMatches.sort((a, b) => b.score - a.score);
     let sortedIds: string[] = classifiedMatches.map(m => m.id);
     sortedIds = sortedIds.filter((id, i) => sortedIds.indexOf(id) === i); // Remove duplicates
-    const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]).filter(c => !!c);
+    // Get the actual commands and filter with context
+    const commands = sortedIds
+      .map(id => this.commands.filter(c => c.id === id)[0])
+      .filter(c => !!c && matchesContext(c.contexts, this.currentContext));
     commands.forEach(c => {
       if (c.actions.onShow) {
         c.actions.onShow(c.id);

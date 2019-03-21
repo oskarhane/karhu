@@ -1,5 +1,6 @@
 import Karhu from '../src';
 import { UnregisteredCommand, Command, EntryGraph, ActionsObject } from '../src/types';
+import { MATCH_ALL } from '../src/utils';
 
 describe('Karhu', () => {
   const karhu: Karhu = new Karhu();
@@ -176,6 +177,67 @@ describe('Karhu', () => {
 
     // Then
     expect(res2).toHaveLength(1);
+  });
+  test('findMatchingCommands is context aware', () => {
+    // Given
+    const input: string = 'open';
+    const context = 'deep-context';
+    const c1: Command = Karhu.createCommand({
+      id: 'c1',
+      name: 'hello',
+      contexts: [context], // only avaiable in certain context
+      keywords: ['open'],
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+    const c2: Command = Karhu.createCommand({
+      id: 'c2',
+      name: 'hello',
+      keywords: ['open'],
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+    const always: Command = Karhu.createCommand({
+      id: 'always',
+      name: 'hello',
+      contexts: [MATCH_ALL], // Available in all contexts
+      keywords: ['just open'],
+      actions: { onExec: jest.fn() },
+      render: () => '',
+    });
+
+    // When
+    // Add commands
+    karhu.addCommand(c1);
+    karhu.addCommand(c2);
+    karhu.addCommand(always);
+
+    // Find matches
+    let res = karhu.findMatchingCommands(input);
+
+    // Then
+    expect(res).toHaveLength(2);
+    expect(res[0].id).toBe(c2.id);
+
+    // When enter context
+    karhu.enterContext(context);
+
+    // Then find matches again
+    res = karhu.findMatchingCommands(input);
+
+    // Then
+    expect(res).toHaveLength(2);
+    expect(res[0].id).toBe(c1.id);
+
+    // When reset context
+    karhu.resetContext();
+
+    // Then find matches again
+    res = karhu.findMatchingCommands(input);
+
+    // Then
+    expect(res).toHaveLength(2);
+    expect(res[0].id).toBe(c2.id);
   });
   test('runCommand returns if command not found', () => {
     const id: string = 'non-existent';

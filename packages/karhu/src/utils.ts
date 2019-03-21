@@ -10,7 +10,7 @@ import {
 
 export const MATCH_ALL: string = '*';
 
-export function classifyMatches(commands: Command[], input: string, context?: string): ClassifiedMatches {
+export function classifyMatches(commands: Command[], input: string = '', context?: string): ClassifiedMatches {
   const normInputWords = input.toLowerCase().split(' ');
   const out: ClassifiedMatches = commands.map(c => {
     let bestMatches: ClassifiedMatch[] = [];
@@ -104,7 +104,8 @@ function customMatch(id: string, score: number): ClassifiedMatch {
     score,
   };
 }
-function matchesContext(shouldBeVisibleIn?: string[], currentContext?: string): boolean {
+
+export function matchesContext(shouldBeVisibleIn?: string[], currentContext?: string): boolean {
   // wants to be shown in all contexts
   if (shouldBeVisibleIn && shouldBeVisibleIn.includes(MATCH_ALL)) {
     return true;
@@ -175,7 +176,7 @@ export function normalizeEntryGraphCommandsCalls(graph: EntryGraph) {
   return graph;
 }
 
-export function findCommandsInEntryGraph(graph: EntryGraph, input: string): ClassifiedMatch[] {
+export function findCommandsInEntryGraph(graph: EntryGraph, input: string = ''): ClassifiedMatch[] {
   const letters: string[] = input.split('');
   let traverseObj: EntryGraph = graph;
   for (let i = 0; i < letters.length; i += 1) {
