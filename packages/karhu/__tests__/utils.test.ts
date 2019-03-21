@@ -85,12 +85,47 @@ describe('classifyMatches', () => {
       score: MatchClass.NO,
     });
   });
+  test('command matching is context aware', () => {
+    // Given
+    const input1 = 'hash';
+    const context1 = undefined;
+
+    const input2 = 'hello';
+    const context2 = 'hashing';
+
+    const topLevelCommand = createCommandWithKeywords(['hash functions']);
+    const secondLevelCommand1 = createCommandWithKeywords(['*'], [context2]);
+    const secondLevelCommand2 = createCommandWithKeywords(['*'], [context2]);
+    const nonMatchingSecondLevelCommand3 = createCommandWithKeywords(['*'], ['not-hashing']);
+    const matchingAllContexts = createCommandWithKeywords(['*'], ['*']);
+
+    const commands = [
+      topLevelCommand,
+      secondLevelCommand1,
+      secondLevelCommand2,
+      nonMatchingSecondLevelCommand3,
+      matchingAllContexts,
+    ];
+
+    // When
+    let res = classifyMatches(commands, input1, context1);
+
+    // Then
+    expect(res.filter(c => c.score > 0)).toHaveLength(2);
+
+    // When
+    res = classifyMatches(commands, input2, context2);
+
+    // Then
+    expect(res.filter(c => c.score > 0)).toHaveLength(3);
+  });
 
   let commandNum = 0;
-  function createCommandWithKeywords(keywords: string[]): Command {
+  function createCommandWithKeywords(keywords: string[], contexts?: string[]): Command {
     return Karhu.createCommand({
       name: `c-${commandNum++}`,
       keywords,
+      contexts,
       actions: { onExec: jest.fn() },
       render: () => '',
     });

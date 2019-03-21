@@ -10,12 +10,17 @@ import {
 
 export const MATCH_ALL: string = '*';
 
-export function classifyMatches(commands: Command[], input: string): ClassifiedMatches {
+export function classifyMatches(commands: Command[], input: string, context?: string): ClassifiedMatches {
   const normInputWords = input.toLowerCase().split(' ');
   const out: ClassifiedMatches = commands.map(c => {
     let bestMatches: ClassifiedMatch[] = [];
     normInputWords.forEach(inputWord => {
       let bestMatch: ClassifiedMatch = noMatch(c.id);
+
+      // If we're not in a context we should be shown in, no match
+      if (!matchesContext(c.contexts, context)) {
+        return;
+      }
       c.keywords.forEach(rawKw => {
         const kw = rawKw.toLowerCase();
 
@@ -98,6 +103,21 @@ function customMatch(id: string, score: number): ClassifiedMatch {
     id,
     score,
   };
+}
+function matchesContext(shouldBeVisibleIn?: string[], currentContext?: string): boolean {
+  // wants to be shown in all contexts
+  if (shouldBeVisibleIn && shouldBeVisibleIn.includes(MATCH_ALL)) {
+    return true;
+  }
+  // Global commands in global context
+  if (!shouldBeVisibleIn && !currentContext) {
+    return true;
+  }
+  // In a context that we like
+  if (shouldBeVisibleIn && currentContext && shouldBeVisibleIn.includes(currentContext)) {
+    return true;
+  }
+  return false;
 }
 
 export function updateEntryGraph(
