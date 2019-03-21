@@ -29,6 +29,10 @@ export function classifyMatches(commands: Command[], input: string = '', context
         if (kw === MATCH_ALL) {
           currentMatch = wildcardMatch(c.id);
         }
+        // No user input = impossible to match anything below
+        else if (!inputWord.length) {
+          return;
+        }
         // Too long, no match
         else if (inputWord.length > kw.length) {
           currentMatch = noMatch(c.id);

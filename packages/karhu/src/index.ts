@@ -101,7 +101,6 @@ export default class Karhu {
 
   findMatchingCommands(): Command[] {
     let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, this.input);
-
     classifiedMatches = classifiedMatches.filter(m => m.score !== MatchClass.NO);
 
     const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, this.input);

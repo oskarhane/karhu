@@ -3,6 +3,28 @@ import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } fr
 import Karhu from '../src';
 
 describe('classifyMatches', () => {
+  test('classifies matches nothing except wildcard if no input', () => {
+    // Given
+    const input: string = '';
+    const noMatch = createCommandWithKeywords(['LOYO', 'yo']);
+    const matchAll = createCommandWithKeywords(['*']);
+
+    const commands = [noMatch, matchAll];
+
+    // When
+    const res = classifyMatches(commands, input);
+
+    // Then
+    expect(res).toHaveLength(2);
+    expect(res[0]).toEqual({
+      id: noMatch.id,
+      score: MatchClass.NO,
+    });
+    expect(res[1]).toEqual({
+      id: matchAll.id,
+      score: Math.ceil(MatchClass.MATCH_ALL),
+    });
+  });
   test('classifies matches (including wildcard to match all)', () => {
     // Given
     const input: string = 'yo';
