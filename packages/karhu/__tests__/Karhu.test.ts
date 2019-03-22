@@ -417,6 +417,8 @@ describe('Commands render function', () => {
     const input: string = 'c';
     const c1Render = jest.fn(() => 'c1');
     const c2Render = jest.fn(() => 'c2');
+    const extraArgsRender = jest.fn(() => 'extraArgs');
+    const extraArg = 'yo';
     let c1: Command = Karhu.createCommand({
       id: 'c1',
       name: 'c1',
@@ -431,18 +433,34 @@ describe('Commands render function', () => {
       actions: { onExec: jest.fn(), onShow: jest.fn() },
       render: c2Render,
     });
+    let extraArgs: Command = Karhu.createCommand({
+      id: 'extraArgs',
+      name: 'extraArgs',
+      keywords: ['c3'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: extraArgsRender,
+    });
 
     // When
     c1 = karhu.addCommand(c1);
     c2 = karhu.addCommand(c2);
+    extraArgs = karhu.addCommand(extraArgs);
+
     karhu.setInput(input);
     const matches = karhu.findMatchingCommands();
-    matches.forEach(c => c.boundRender && c.boundRender());
+    const c1Match = matches.find(c => c.id === c1.id);
+    c1Match && c1Match.boundRender && c1Match.boundRender();
+    const c2Match = matches.find(c => c.id === c2.id);
+    c2Match && c2Match.boundRender && c2Match.boundRender();
+    const extraArgsMatch = matches.find(c => c.id === extraArgs.id);
+    extraArgsMatch && extraArgsMatch.boundRender && extraArgsMatch.boundRender(extraArg);
 
     // Then
     expect(c1Render).toHaveBeenCalledTimes(1);
     expect(c1Render).toHaveBeenCalledWith(c1, input);
     expect(c2Render).toHaveBeenCalledTimes(1);
     expect(c2Render).toHaveBeenCalledWith(c2, input);
+    expect(extraArgsRender).toHaveBeenCalledTimes(1);
+    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, input, extraArg);
   });
 });
