@@ -4,7 +4,8 @@ export interface UnregisteredCommand {
   contexts?: string[];
   keywords: string[];
   actions: ActionsObject;
-  render: (c: Command) => JSX.Element | string;
+  render: (c: Command, input: string) => JSX.Element | string;
+  boundRender?: () => () => JSX.Element | string;
 }
 
 export interface CommandMetadata {

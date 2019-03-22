@@ -410,3 +410,39 @@ describe('Karhu', () => {
     expect(karhu.getEntryGraph()).toEqual(newEntryGraph);
   });
 });
+describe('Commands render function', () => {
+  test('boundRender function passes command + input', () => {
+    // Given
+    const karhu = new Karhu();
+    const input: string = 'c';
+    const c1Render = jest.fn(() => 'c1');
+    const c2Render = jest.fn(() => 'c2');
+    let c1: Command = Karhu.createCommand({
+      id: 'c1',
+      name: 'c1',
+      keywords: ['c1'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: c1Render,
+    });
+    let c2: Command = Karhu.createCommand({
+      id: 'c2',
+      name: 'c2',
+      keywords: ['c2'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: c2Render,
+    });
+
+    // When
+    c1 = karhu.addCommand(c1);
+    c2 = karhu.addCommand(c2);
+    karhu.setInput(input);
+    const matches = karhu.findMatchingCommands();
+    matches.forEach(c => c.boundRender && c.boundRender());
+
+    // Then
+    expect(c1Render).toHaveBeenCalledTimes(1);
+    expect(c1Render).toHaveBeenCalledWith(c1, input);
+    expect(c2Render).toHaveBeenCalledTimes(1);
+    expect(c2Render).toHaveBeenCalledWith(c2, input);
+  });
+});

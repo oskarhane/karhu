@@ -114,7 +114,15 @@ export default class Karhu {
     // Get the actual commands and filter with context
     const commands = sortedIds
       .map(id => this.commands.filter(c => c.id === id)[0])
-      .filter(c => !!c && matchesContext(c.contexts, this.currentContext));
+      .filter(c => !!c && matchesContext(c.contexts, this.currentContext))
+      .map(c => {
+        //@ts-ignore
+        c.boundRender = (...args) => {
+          //@ts-ignore
+          return c.render(c, this.input, ...args);
+        };
+        return c;
+      });
     commands.forEach(c => {
       if (c.actions.onShow) {
         c.actions.onShow(c.id);
