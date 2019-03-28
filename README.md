@@ -48,9 +48,10 @@ function shouldOpen(e: KeyboardEvent): boolean {
 
 function MyKarhu() {
   const togglerProps = useToggler({ shouldOpen });
-  const onExec = (entryGraph: EntryGraph) => {
+  const onExec = (result: CommandRunResult) => {
+    const {entryGraph: EntryGraph}
     console.log('entryGraph: ', entryGraph);
-    togglerProps.onExec();
+    togglerProps.onExec(result);
   };
   return (
     <React.Fragment>

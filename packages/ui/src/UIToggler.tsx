@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, RefObject } from 'react';
-import { EntryGraph } from '@karhu/core/lib/types';
+import { CommandRunResult } from '@karhu/core/lib/types';
 
 export const ESCAPE_PRESS = 'ESCAPE_PRESS';
 export const OUTSIDE_CLICK = 'OUTSIDE_CLICK';
@@ -22,7 +22,7 @@ type HookProps = {
 
 export type RenderProps = {
   open: boolean;
-  onExec: (entryGraph: EntryGraph) => void;
+  onExec: (result: CommandRunResult) => void;
   setUIRef: RefObject<HTMLElement>;
 };
 
@@ -91,7 +91,12 @@ export function useToggler(props: HookProps) {
       setOpen(false);
     }
   }
-  return { open, onExec: () => close(COMMAND_EXECUTION), setUIRef: ref };
+  const onExec = (res: CommandRunResult) => {
+    if (!res.open) {
+      close(COMMAND_EXECUTION);
+    }
+  };
+  return { open, onExec, setUIRef: ref };
 }
 
 export default function Toggler(props: Props) {

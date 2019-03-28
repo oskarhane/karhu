@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import { render } from 'react-testing-library';
+import { render, act } from 'react-testing-library';
 import Karhu from '@karhu/core';
 import { KarhuComponent, KarhuProvider, AddCommand, KarhuContext } from '../src/index';
-import { EntryGraph } from '@karhu/core/src/types';
+import { AfterExec } from '@karhu/core/src/types';
 
 describe('Errors', () => {
   function onError(e: Event) {
@@ -70,9 +70,9 @@ test('updates matching command list when prop input changes', () => {
     id: 'c1',
     name: 'first-command',
     keywords: ['first command'],
-    actions: {
-      onExec: jest.fn(),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command1.name;
     },
@@ -81,9 +81,9 @@ test('updates matching command list when prop input changes', () => {
     id: 'c2',
     name: 'second-command',
     keywords: ['second command'],
-    actions: {
-      onExec: jest.fn(),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command2.name;
     },
@@ -94,13 +94,15 @@ test('updates matching command list when prop input changes', () => {
       {props.children}
     </div>
   );
+  let execFn: any;
   const tree = (props: any) => {
     return (
       <KarhuProvider value={{ karhu }}>
         <AddCommand command={command1} />
         <AddCommand command={command2} />
         <KarhuComponent input={props.input}>
-          {({ commandsList }) => {
+          {({ commandsList, exec }) => {
+            execFn = exec;
             return (
               <MyComp>
                 {commandsList.map(c => (
@@ -124,7 +126,7 @@ test('updates matching command list when prop input changes', () => {
   expect(queryByTestId('command-list-item')).toBeNull();
 
   // When
-  rerender(tree({ input: 'fir' }));
+  act(() => rerender(tree({ input: 'fir' })));
 
   // Then
   // Match first command
@@ -140,6 +142,15 @@ test('updates matching command list when prop input changes', () => {
   expect(getByTestId('command-list-item')).not.toBeNull();
   expect(queryByText('first-command')).toBeNull();
   expect(getByText('second-command')).not.toBeUndefined();
+
+  // When
+  act(() => {
+    execFn(command2.id);
+  });
+  rerender(tree({ input: '' }));
+
+  // Then
+  expect(queryByTestId('command-list-item')).toBeNull();
 
   // When
   rerender(tree({ input: 'comma' }));
@@ -168,9 +179,9 @@ test('exec returns the entry graph', () => {
     id: commandId,
     name: 'first-command',
     keywords: ['first command'],
-    actions: {
-      onExec: jest.fn(),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command1.name;
     },
@@ -190,7 +201,7 @@ test('exec returns the entry graph', () => {
       </KarhuComponent>
     </KarhuProvider>,
   );
-  const eg: EntryGraph = execFn(commandId);
+  const { entryGraph: eg } = execFn(commandId);
 
   // Then
   expect(eg).toEqual({ next: { f: { commands: [{ calls: 1, id: 'c1' }] } } });

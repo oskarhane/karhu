@@ -1,23 +1,52 @@
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, sumCommandsRecursively } from '../src/utils';
+import {
+  classifyMatches,
+  updateEntryGraph,
+  findCommandsInEntryGraph,
+  sumCommandsRecursively,
+  extractCmdAndArgsFromInput,
+} from '../src/utils';
 import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
 import Karhu from '../src';
 
 describe('classifyMatches', () => {
-  test('classifies matches', () => {
+  test('classifies matches nothing except wildcard if no input', () => {
+    // Given
+    const input: string = '';
+    const noMatch = createCommandWithKeywords(['LOYO', 'yo']);
+    const matchAll = createCommandWithKeywords(['*']);
+
+    const commands = [noMatch, matchAll];
+
+    // When
+    const res = classifyMatches(commands, input);
+
+    // Then
+    expect(res).toHaveLength(2);
+    expect(res[0]).toEqual({
+      id: noMatch.id,
+      score: MatchClass.NO,
+    });
+    expect(res[1]).toEqual({
+      id: matchAll.id,
+      score: Math.ceil(MatchClass.MATCH_ALL),
+    });
+  });
+  test('classifies matches (including wildcard to match all)', () => {
     // Given
     const input: string = 'yo';
     const noMatch = createCommandWithKeywords(['open door', 'talk loud']);
     const startsMatch = createCommandWithKeywords(['YOLO', 'my man']);
     const containsMatch = createCommandWithKeywords(['LOYO', 'my man']);
     const exactMatch = createCommandWithKeywords(['LOYO', 'yo']);
+    const matchAll = createCommandWithKeywords(['*']);
 
-    const commands = [noMatch, startsMatch, containsMatch, exactMatch];
+    const commands = [noMatch, startsMatch, containsMatch, exactMatch, matchAll];
 
     // When
     const res = classifyMatches(commands, input);
 
     // Then
-    expect(res).toHaveLength(4);
+    expect(res).toHaveLength(5);
     expect(res[0]).toEqual({
       id: noMatch.id,
       score: MatchClass.NO,
@@ -33,6 +62,10 @@ describe('classifyMatches', () => {
     expect(res[3]).toEqual({
       id: exactMatch.id,
       score: MatchClass.EXACT,
+    });
+    expect(res[4]).toEqual({
+      id: matchAll.id,
+      score: Math.ceil(MatchClass.MATCH_ALL),
     });
   });
   it('returns fast if input is longer than keyword', () => {
@@ -69,24 +102,59 @@ describe('classifyMatches', () => {
     expect(res).toHaveLength(3);
     expect(res[0]).toEqual({
       id: partSeparatedMatch.id,
-      score: Math.floor((MatchClass.STARTS + MatchClass.CONTAINS + MatchClass.CONTAINS) / 3),
+      score: Math.ceil((MatchClass.STARTS + MatchClass.CONTAINS + MatchClass.CONTAINS) / 3),
     });
     expect(res[1]).toEqual({
       id: partMultiMatch.id,
-      score: Math.floor((MatchClass.CONTAINS + MatchClass.STARTS + MatchClass.STARTS) / 3),
+      score: Math.ceil((MatchClass.CONTAINS + MatchClass.STARTS + MatchClass.STARTS) / 3),
     });
     expect(res[2]).toEqual({
       id: partNonMatch.id,
       score: MatchClass.NO,
     });
   });
+  test('command matching is context aware', () => {
+    // Given
+    const input1 = 'hash';
+    const context1 = undefined;
+
+    const input2 = 'hello';
+    const context2 = 'hashing';
+
+    const topLevelCommand = createCommandWithKeywords(['hash functions']);
+    const secondLevelCommand1 = createCommandWithKeywords(['*'], [context2]);
+    const secondLevelCommand2 = createCommandWithKeywords(['*'], [context2]);
+    const nonMatchingSecondLevelCommand3 = createCommandWithKeywords(['*'], ['not-hashing']);
+    const matchingAllContexts = createCommandWithKeywords(['*'], ['*']);
+
+    const commands = [
+      topLevelCommand,
+      secondLevelCommand1,
+      secondLevelCommand2,
+      nonMatchingSecondLevelCommand3,
+      matchingAllContexts,
+    ];
+
+    // When
+    let res = classifyMatches(commands, input1, context1);
+
+    // Then
+    expect(res.filter(c => c.score > 0)).toHaveLength(2);
+
+    // When
+    res = classifyMatches(commands, input2, context2);
+
+    // Then
+    expect(res.filter(c => c.score > 0)).toHaveLength(3);
+  });
 
   let commandNum = 0;
-  function createCommandWithKeywords(keywords: string[]): Command {
+  function createCommandWithKeywords(keywords: string[], contexts?: string[]): Command {
     return Karhu.createCommand({
       name: `c-${commandNum++}`,
       keywords,
-      actions: { onExec: jest.fn() },
+      contexts,
+      onExec: jest.fn(),
       render: () => '',
     });
   }
@@ -330,5 +398,16 @@ describe('entryGraph', () => {
         };
       }),
     );
+  });
+});
+describe('extractCmdAndArgsFromInput', () => {
+  const tests = [
+    ['c < hello', ['c', 'hello']],
+    ['c ', ['c']],
+    ['c < first < second', ['c', 'first < second']],
+    ['< first', ['', 'first']],
+  ];
+  test.each(tests)('extractCmdAndArgsFromInput %s', (input, expected) => {
+    expect(extractCmdAndArgsFromInput(input)).toEqual(expected);
   });
 });

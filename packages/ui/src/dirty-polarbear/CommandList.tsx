@@ -28,7 +28,7 @@ export default class CommandList extends React.Component<Props, State> {
                     onClick={() => onExec(c.id)}
                     key={c.id}
                   >
-                    {c.render(c)}
+                    {c.boundRender()}
                   </CommandListItem>
                 ))}
               </React.Fragment>

@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Karhu from '@karhu/core';
-import { Command, UnregisteredCommand, EntryGraph } from '@karhu/core/lib/types';
+import { Command, UnregisteredCommand, CommandRunResult } from '@karhu/core/lib/types';
 
 type KarhuContextProps = { karhu: Karhu };
 const KarhuContext = React.createContext<Partial<KarhuContextProps>>({});
 
 type ChildrenProviderObject = {
   commandsList: Command[];
-  exec: (id: string) => EntryGraph;
+  exec: (id: string) => CommandRunResult;
 };
 
 type AddCommandProps = {
@@ -31,20 +31,21 @@ export function useKarhu(input: string): ChildrenProviderObject {
   const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
   const { karhu } = karhuContext;
   const [commandsList, setCommandsList] = useState<Command[]>([]);
+
   if (!karhu) {
     throw new Error('Karhu not found');
   }
-
   useEffect(
     () => {
-      const list = karhu.findMatchingCommands(input);
+      karhu.setInput(input);
+      const list = karhu.findMatchingCommands();
       setCommandsList(list);
     },
     [input],
   );
 
-  const exec = (id: string): EntryGraph => {
-    return karhu.runCommand(id, input);
+  const exec = (id: string): CommandRunResult => {
+    return karhu.runCommand(id);
   };
 
   return { commandsList, exec };

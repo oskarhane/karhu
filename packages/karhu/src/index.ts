@@ -6,14 +6,27 @@ import {
   ClassifiedMatch,
   MatchClass,
   EntryGraph,
+  KarhuContext,
+  AfterExec,
+  CommandRunResult,
 } from './types';
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph } from './utils';
+import {
+  classifyMatches,
+  updateEntryGraph,
+  findCommandsInEntryGraph,
+  matchesContext,
+  extractCmdAndArgsFromInput,
+} from './utils';
 
 export default class Karhu {
   static currentId: number = 0;
+  open: boolean = false;
+  input: string = '';
   commands: Command[] = [];
   entryGraph: EntryGraph = {};
   historyCallLimit: number = 30;
+  currentContextId: undefined | string;
+  contexts: KarhuContext[] = [];
 
   constructor(entryGraph?: EntryGraph, historyCallLimit?: number) {
     this.reset();
@@ -29,6 +42,9 @@ export default class Karhu {
     Karhu.currentId = 0;
     this.commands = [];
     this.entryGraph = {};
+    this.currentContextId = undefined;
+    this.open = false;
+    this.input = '';
   }
 
   addCommand(command: UnregisteredCommand): Command {
@@ -63,15 +79,37 @@ export default class Karhu {
     return this.entryGraph;
   }
 
-  findMatchingCommands(input?: string): Command[] {
-    if (!input) {
-      return [];
-    }
-    let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, input);
+  registerContext(ctx: KarhuContext): void {
+    this.unregisterContext(ctx.id);
+    this.contexts.push(ctx);
+  }
 
+  unregisterContext(id: string) {
+    this.contexts = this.contexts.filter(context => context.id !== id);
+  }
+
+  getContext(id: string): KarhuContext | undefined {
+    const found = this.contexts.find(ctx => ctx.id === id);
+    return found;
+  }
+
+  enterContext(id: string): void {
+    this.currentContextId = id;
+  }
+
+  resetContext(): void {
+    this.currentContextId = undefined;
+  }
+
+  setInput(str: string) {
+    this.input = str;
+  }
+
+  findMatchingCommands(): Command[] {
+    let classifiedMatches: ClassifiedMatches = classifyMatches(this.commands, this.input);
     classifiedMatches = classifiedMatches.filter(m => m.score !== MatchClass.NO);
 
-    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, input);
+    const historyCommands: ClassifiedMatch[] = findCommandsInEntryGraph(this.entryGraph, this.input);
     if (historyCommands.length) {
       classifiedMatches.unshift(...historyCommands);
     }
@@ -79,24 +117,56 @@ export default class Karhu {
     classifiedMatches.sort((a, b) => b.score - a.score);
     let sortedIds: string[] = classifiedMatches.map(m => m.id);
     sortedIds = sortedIds.filter((id, i) => sortedIds.indexOf(id) === i); // Remove duplicates
-    const commands = sortedIds.map(id => this.commands.filter(c => c.id === id)[0]).filter(c => !!c);
-    commands.forEach(c => {
-      if (c.actions.onShow) {
-        c.actions.onShow(c.id);
-      }
-    });
+    // Get the actual commands and filter with context
+    const commands = sortedIds
+      .map(id => this.commands.filter(c => c.id === id)[0])
+      .filter(c => !!c && matchesContext(c.contexts, this.currentContextId))
+      .map(c => {
+        c.boundRender = (...args) => {
+          const [cmd, inputArgs] = extractCmdAndArgsFromInput(this.input);
+          let allArgs: any[] | undefined = undefined;
+          if (inputArgs || args.length) {
+            allArgs = [];
+            allArgs = inputArgs ? [inputArgs] : allArgs;
+            allArgs = args.length ? allArgs.concat(args) : allArgs;
+          }
+          return c.render(c, { userInput: cmd, userArgs: allArgs });
+        };
+        return c;
+      });
     return commands;
   }
 
-  runCommand(id: string, input: string): EntryGraph {
+  runCommand(id: string): CommandRunResult {
     const command = this._getCommandById(id);
     if (!command) {
-      return this.entryGraph;
+      return { entryGraph: this.entryGraph, open: true, input: this.input };
     }
-    this.entryGraph = updateEntryGraph(this.entryGraph, input, id, this.historyCallLimit);
-    setTimeout(() => command.actions.onExec(), 0);
+    const [userInput, userArgs] = extractCmdAndArgsFromInput(this.input);
+
+    const execResult = command.onExec({
+      enterContext: this.enterContext.bind(this),
+      userInput,
+      userArgs: userArgs ? [userArgs] : undefined,
+    });
+    this.entryGraph = updateEntryGraph(this.entryGraph, userInput, id, this.historyCallLimit);
     this._recordRunCommand(id);
-    return this.entryGraph;
+    this._handleExecResult(execResult);
+    return { entryGraph: this.entryGraph, open: this.open, input: this.input };
+  }
+
+  _handleExecResult(execResult: AfterExec | void | undefined): void {
+    if (!execResult || execResult === AfterExec.CLEAR_INPUT) {
+      this.input = '';
+    }
+    this.open = this._shouldStayOpen(execResult);
+  }
+
+  _shouldStayOpen(execResult: AfterExec | void | undefined): boolean {
+    if (!execResult || execResult === AfterExec.CLOSE) {
+      return false;
+    }
+    return true;
   }
 
   _getCommandById(id: string): Command | undefined {
@@ -126,10 +196,12 @@ export default class Karhu {
     const meta: CommandMetadata = {
       calls: 0,
     };
+    const boundRenderStub = () => '';
     return {
       id,
       ...command,
       meta,
+      boundRender: boundRenderStub,
     };
   };
 }

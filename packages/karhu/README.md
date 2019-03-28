@@ -43,7 +43,7 @@ Searches through the existing commands keywords and the current entry graph to
 find commands that matches the provided input, and returns them.
 
 ```ts
-karhu.findMatchingCommands(input?: string): Command[]
+karhu.findMatchingCommands(): Command[]
 ```
 
 #### `karhu.runCommand`
@@ -52,11 +52,8 @@ Call the command with the provided id's `.actions.onExec()` function.
 Returns the updated entry graph.  
 The input is needed to better sort the commands next time `karhu.findMatchingCommands()` is called.
 
-**Note**: Even though this method is synchronous, the `.onExec()`
-function is **not** being called synchronously. It's bering called using `setTimeout(fn, 0)` to not block further executing.
-
 ```ts
-karhu.runCommand(id: string, input: string): EntryGraph
+karhu.runCommand(id: string): CommandRunResult
 ```
 
 #### `karhu.getCommands`

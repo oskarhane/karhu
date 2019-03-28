@@ -2,7 +2,7 @@ import React, { ReactEventHandler, useRef, useEffect, useState } from 'react';
 import { useKarhu } from '@karhu/react';
 import CommandList from './CommandList';
 import { MainElement, MainInput } from './styled';
-import { EntryGraph } from '@karhu/core/lib/types';
+import { CommandRunResult } from '@karhu/core/lib/types';
 
 interface InputProps {
   onChange: ReactEventHandler;
@@ -21,7 +21,7 @@ function Input(props: InputProps) {
 }
 
 interface Props {
-  onExec?: (entryGraph: EntryGraph) => void;
+  onExec?: (execResult: CommandRunResult) => void;
   setUIRef?: any;
   open: boolean;
 }
@@ -35,9 +35,10 @@ function DirtyPolarBear(props: Props) {
     setInput(input);
   };
   const onExec = (id: string) => {
-    const entryGraph: EntryGraph = exec(id);
+    const res = exec(id);
+    setInput(res.input);
     if (props.onExec) {
-      props.onExec(entryGraph);
+      props.onExec(res);
     }
   };
   if (!props.open) {

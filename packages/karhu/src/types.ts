@@ -3,8 +3,8 @@ export interface UnregisteredCommand {
   name: string;
   contexts?: string[];
   keywords: string[];
-  actions: ActionsObject;
-  render: (c: Command) => JSX.Element | string;
+  onExec: (execProps: ExecProps) => AfterExec | void;
+  render: (c: Command, renderProps: RenderProps) => JSX.Element | string;
 }
 
 export interface CommandMetadata {
@@ -14,6 +14,7 @@ export interface CommandMetadata {
 export interface Command extends UnregisteredCommand {
   id: string;
   meta: CommandMetadata;
+  boundRender: (...args: any) => JSX.Element | string;
 }
 
 export enum MatchClass {
@@ -22,6 +23,7 @@ export enum MatchClass {
   STARTS = 3,
   CONTAINS = 2,
   ACRONYM = 1,
+  MATCH_ALL = 0.5,
   NO = 0,
 }
 
@@ -45,7 +47,32 @@ export type EntryGraphCommandsSummary = {
   [key: string]: EntryGraphRecord;
 };
 
-export interface ActionsObject {
-  onExec: () => void;
-  onShow?: (id: string) => void;
+export interface RenderProps {
+  userInput: string;
+  userArgs?: string[];
+}
+
+export interface ExecProps {
+  enterContext: (id: string) => void;
+  userInput: string;
+  userArgs?: string[];
+}
+
+export enum AfterExec {
+  CLOSE = 'CLOSE',
+  CLEAR_INPUT = 'CLEAR_INPUT',
+  KEEP = 'KEEP',
+  NOOP = 'NOOP',
+}
+
+export interface KarhuContext {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface CommandRunResult {
+  entryGraph: EntryGraph;
+  open: boolean;
+  input: string;
 }

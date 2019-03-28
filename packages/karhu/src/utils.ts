@@ -8,18 +8,45 @@ import {
   EntryGraphCommandsSummary,
 } from './types';
 
-export function classifyMatches(commands: Command[], input: string): ClassifiedMatches {
-  const normInputWords = input.toLowerCase().split(' ');
+export const MATCH_ALL: string = '*';
+
+export const extractCmdAndArgsFromInput = (input: string) => {
+  const pos = input.indexOf('<');
+  if (pos < 0) {
+    return [input.trim()];
+  }
+  if (pos === 0) {
+    return ['', input.substring(1).trim()];
+  }
+  return [input.slice(0, pos).trim(), input.slice(pos + 1).trim()];
+};
+
+export function classifyMatches(commands: Command[], input: string = '', context?: string): ClassifiedMatches {
+  const [inputCommand] = extractCmdAndArgsFromInput(input);
+  const normInputWords = inputCommand.toLowerCase().split(' ');
   const out: ClassifiedMatches = commands.map(c => {
     let bestMatches: ClassifiedMatch[] = [];
     normInputWords.forEach(inputWord => {
       let bestMatch: ClassifiedMatch = noMatch(c.id);
+
+      // If we're not in a context we should be shown in, no match
+      if (!matchesContext(c.contexts, context)) {
+        return;
+      }
       c.keywords.forEach(rawKw => {
         const kw = rawKw.toLowerCase();
 
         let currentMatch: ClassifiedMatch = noMatch(c.id);
+        // catch wildcard
+        if (kw === MATCH_ALL) {
+          currentMatch = wildcardMatch(c.id);
+        }
+        // No user input = impossible to match anything below
+        else if (!inputWord.length) {
+          return;
+        }
         // Too long, no match
-        if (inputWord.length > kw.length) {
+        else if (inputWord.length > kw.length) {
           currentMatch = noMatch(c.id);
         }
         // Exact
@@ -51,7 +78,7 @@ export function classifyMatches(commands: Command[], input: string): ClassifiedM
       }
       totalScore += bestMatch.score;
     }
-    const meanScore: number = Math.floor(totalScore / bestMatches.length);
+    const meanScore: number = Math.ceil(totalScore / bestMatches.length);
     return customMatch(c.id, meanScore);
   });
   return out;
@@ -81,11 +108,33 @@ function containsMatch(id: string): ClassifiedMatch {
     score: MatchClass.CONTAINS,
   };
 }
+function wildcardMatch(id: string): ClassifiedMatch {
+  return {
+    id,
+    score: MatchClass.MATCH_ALL,
+  };
+}
 function customMatch(id: string, score: number): ClassifiedMatch {
   return {
     id,
     score,
   };
+}
+
+export function matchesContext(shouldBeVisibleIn?: string[], currentContext?: string): boolean {
+  // wants to be shown in all contexts
+  if (shouldBeVisibleIn && shouldBeVisibleIn.includes(MATCH_ALL)) {
+    return true;
+  }
+  // Global commands in global context
+  if (!shouldBeVisibleIn && !currentContext) {
+    return true;
+  }
+  // In a context that we like
+  if (shouldBeVisibleIn && currentContext && shouldBeVisibleIn.includes(currentContext)) {
+    return true;
+  }
+  return false;
 }
 
 export function updateEntryGraph(
@@ -143,8 +192,12 @@ export function normalizeEntryGraphCommandsCalls(graph: EntryGraph) {
   return graph;
 }
 
-export function findCommandsInEntryGraph(graph: EntryGraph, input: string): ClassifiedMatch[] {
-  const letters: string[] = input.split('');
+export function findCommandsInEntryGraph(graph: EntryGraph, input: string = ''): ClassifiedMatch[] {
+  const [inputCommand] = extractCmdAndArgsFromInput(input);
+  const letters: string[] = inputCommand.split('');
+  if (!letters.length) {
+    return [];
+  }
   let traverseObj: EntryGraph = graph;
   for (let i = 0; i < letters.length; i += 1) {
     if (!traverseObj.next || !traverseObj.next[letters[i]]) {
