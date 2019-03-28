@@ -27,7 +27,7 @@ export const AddCommand = (props: AddCommandProps) => {
   return null;
 };
 
-export function useKarhu(input: string = ''): ChildrenProviderObject {
+export function useKarhu(input: string): ChildrenProviderObject {
   const karhuContext: Partial<KarhuContextProps> = useContext(KarhuContext);
   const { karhu } = karhuContext;
   const [commandsList, setCommandsList] = useState<Command[]>([]);

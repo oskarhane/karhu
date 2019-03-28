@@ -1,5 +1,5 @@
 import Karhu from '../src';
-import { UnregisteredCommand, Command, EntryGraph, AfterExec } from '../src/types';
+import { UnregisteredCommand, Command, EntryGraph, AfterExec, KarhuContext } from '../src/types';
 import { MATCH_ALL } from '../src/utils';
 
 describe('Karhu', () => {
@@ -255,9 +255,11 @@ describe('Karhu', () => {
     // Then
     expect(res).toEqual({});
   });
-  test('runCommand run the command and return the entryGraph', () => {
+  test('runCommand run the command and return the entryGraph, and ignores args after < operator', () => {
     // Given
     const input: string = 'yo';
+    const secondInput = 'ya';
+    const inputWithArg: string = `${secondInput} < hello there`;
     let noMatch: Command = Karhu.createCommand({
       id: 'no',
       name: 'hello',
@@ -277,20 +279,32 @@ describe('Karhu', () => {
     noMatch = karhu.addCommand(noMatch);
     startsMatch = karhu.addCommand(startsMatch);
     karhu.setInput(input);
+    karhu.runCommand(startsMatch.id);
+    karhu.setInput(inputWithArg);
     const { entryGraph: res } = karhu.runCommand(startsMatch.id);
 
     // Then
-    expect(startsMatch.onExec).toHaveBeenCalledTimes(1);
+    expect(startsMatch.onExec).toHaveBeenCalledTimes(2);
     expect(startsMatch.onExec).toHaveBeenCalledWith(
       expect.objectContaining({ userInput: input, userArgs: undefined, enterContext: expect.any(Function) }),
     );
-    expect(startsMatch.meta.calls).toEqual(1);
+    expect(startsMatch.onExec).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userInput: secondInput,
+        userArgs: ['hello there'],
+        enterContext: expect.any(Function),
+      }),
+    );
+    expect(startsMatch.meta.calls).toEqual(2);
 
     expect(res).toEqual({
       next: {
         y: {
           next: {
             o: {
+              commands: [{ id: startsMatch.id, calls: 1 }],
+            },
+            a: {
               commands: [{ id: startsMatch.id, calls: 1 }],
             },
           },
@@ -429,11 +443,11 @@ describe('Commands render function', () => {
 
     // Then
     expect(c1Render).toHaveBeenCalledTimes(1);
-    expect(c1Render).toHaveBeenCalledWith(c1, input, undefined);
+    expect(c1Render).toHaveBeenCalledWith(c1, { userInput: input });
     expect(c2Render).toHaveBeenCalledTimes(1);
-    expect(c2Render).toHaveBeenCalledWith(c2, input, undefined);
+    expect(c2Render).toHaveBeenCalledWith(c2, { userInput: input });
     expect(extraArgsRender).toHaveBeenCalledTimes(1);
-    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, input, [extraArg]);
+    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, { userInput: input, userArgs: [extraArg] });
   });
 });
 
@@ -487,11 +501,11 @@ describe('input arguments using < operator', () => {
 
     // Then
     expect(c1Render).toHaveBeenCalledTimes(1);
-    expect(c1Render).toHaveBeenCalledWith(c1, cmd, [args]);
+    expect(c1Render).toHaveBeenCalledWith(c1, { userInput: cmd, userArgs: [args] });
     expect(c2Render).toHaveBeenCalledTimes(1);
-    expect(c2Render).toHaveBeenCalledWith(c2, cmd, [args]);
+    expect(c2Render).toHaveBeenCalledWith(c2, { userInput: cmd, userArgs: [args] });
     expect(extraArgsRender).toHaveBeenCalledTimes(1);
-    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, cmd, [args, extraArg]);
+    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, { userInput: cmd, userArgs: [args, extraArg] });
 
     // When executing commands
     karhu.runCommand(c1.id);
@@ -504,15 +518,59 @@ describe('input arguments using < operator', () => {
     // Then
     expect(c1.onExec).toHaveBeenCalledTimes(1);
     expect(c1.onExec).toHaveBeenCalledWith(
-      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+      expect.objectContaining({ userInput: cmd, userArgs: [args], enterContext: expect.any(Function) }),
     );
     expect(c2.onExec).toHaveBeenCalledTimes(1);
     expect(c2.onExec).toHaveBeenCalledWith(
-      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+      expect.objectContaining({ userInput: cmd, userArgs: [args], enterContext: expect.any(Function) }),
     );
     expect(extraArgs.onExec).toHaveBeenCalledTimes(1);
     expect(extraArgs.onExec).toHaveBeenCalledWith(
-      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+      expect.objectContaining({ userInput: cmd, userArgs: [args], enterContext: expect.any(Function) }),
     );
+  });
+});
+describe('Karhu contexts', () => {
+  test('karhu handles contexts', () => {
+    // Given
+    const karhu = new Karhu();
+    const ctx1: KarhuContext = {
+      id: 'ctx1',
+      title: 'ctx1',
+      description: 'this is ctx1',
+    };
+    const ctx2: KarhuContext = {
+      id: 'ctx2',
+      title: 'ctx2',
+      description: 'this is ctx2',
+    };
+
+    // When
+    karhu.registerContext(ctx1);
+    karhu.registerContext(ctx2);
+
+    // Then
+    expect(karhu.contexts.length).toBe(2);
+    expect(karhu.getContext(ctx2.id)).toEqual(ctx2);
+
+    // When
+    karhu.unregisterContext(ctx2.id);
+
+    // Then
+    expect(karhu.contexts.length).toBe(1);
+    expect(karhu.getContext(ctx2.id)).toBeUndefined();
+    expect(karhu.getContext(ctx1.id)).toEqual(ctx1);
+
+    // When entering context
+    karhu.enterContext(ctx2.id); // does not have to be a registered context
+
+    // Then
+    expect(karhu.currentContextId).toEqual(ctx2.id);
+
+    // When
+    karhu.resetContext();
+
+    // Then
+    expect(karhu.currentContextId).toBeUndefined();
   });
 });

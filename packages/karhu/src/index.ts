@@ -25,7 +25,7 @@ export default class Karhu {
   commands: Command[] = [];
   entryGraph: EntryGraph = {};
   historyCallLimit: number = 30;
-  currentContext: undefined | string;
+  currentContextId: undefined | string;
   contexts: KarhuContext[] = [];
 
   constructor(entryGraph?: EntryGraph, historyCallLimit?: number) {
@@ -42,7 +42,7 @@ export default class Karhu {
     Karhu.currentId = 0;
     this.commands = [];
     this.entryGraph = {};
-    this.currentContext = undefined;
+    this.currentContextId = undefined;
     this.open = false;
     this.input = '';
   }
@@ -93,12 +93,12 @@ export default class Karhu {
     return found;
   }
 
-  enterContext(newContext: string): void {
-    this.currentContext = newContext;
+  enterContext(id: string): void {
+    this.currentContextId = id;
   }
 
   resetContext(): void {
-    this.currentContext = undefined;
+    this.currentContextId = undefined;
   }
 
   setInput(str: string) {
@@ -120,9 +120,8 @@ export default class Karhu {
     // Get the actual commands and filter with context
     const commands = sortedIds
       .map(id => this.commands.filter(c => c.id === id)[0])
-      .filter(c => !!c && matchesContext(c.contexts, this.currentContext))
+      .filter(c => !!c && matchesContext(c.contexts, this.currentContextId))
       .map(c => {
-        //@ts-ignore
         c.boundRender = (...args) => {
           const [cmd, inputArgs] = extractCmdAndArgsFromInput(this.input);
           let allArgs: any[] | undefined = undefined;
@@ -131,8 +130,7 @@ export default class Karhu {
             allArgs = inputArgs ? [inputArgs] : allArgs;
             allArgs = args.length ? allArgs.concat(args) : allArgs;
           }
-          //@ts-ignore
-          return c.render(c, cmd, allArgs);
+          return c.render(c, { userInput: cmd, userArgs: allArgs });
         };
         return c;
       });
@@ -145,21 +143,26 @@ export default class Karhu {
       return { entryGraph: this.entryGraph, open: true, input: this.input };
     }
     const [userInput, userArgs] = extractCmdAndArgsFromInput(this.input);
-    const execResult = command.onExec({ enterContext: this.enterContext.bind(this), userInput, userArgs });
-    this.entryGraph = updateEntryGraph(this.entryGraph, this.input, id, this.historyCallLimit);
+
+    const execResult = command.onExec({
+      enterContext: this.enterContext.bind(this),
+      userInput,
+      userArgs: userArgs ? [userArgs] : undefined,
+    });
+    this.entryGraph = updateEntryGraph(this.entryGraph, userInput, id, this.historyCallLimit);
     this._recordRunCommand(id);
     this._handleExecResult(execResult);
     return { entryGraph: this.entryGraph, open: this.open, input: this.input };
   }
 
-  _handleExecResult(execResult: AfterExec | undefined): void {
+  _handleExecResult(execResult: AfterExec | void | undefined): void {
     if (!execResult || execResult === AfterExec.CLEAR_INPUT) {
       this.input = '';
     }
     this.open = this._shouldStayOpen(execResult);
   }
 
-  _shouldStayOpen(execResult: AfterExec | undefined): boolean {
+  _shouldStayOpen(execResult: AfterExec | void | undefined): boolean {
     if (!execResult || execResult === AfterExec.CLOSE) {
       return false;
     }
@@ -193,10 +196,12 @@ export default class Karhu {
     const meta: CommandMetadata = {
       calls: 0,
     };
+    const boundRenderStub = () => '';
     return {
       id,
       ...command,
       meta,
+      boundRender: boundRenderStub,
     };
   };
 }

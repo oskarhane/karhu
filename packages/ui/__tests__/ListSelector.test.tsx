@@ -18,7 +18,7 @@ const MyComp = (props: any) => {
                   onClick={() => onExec(c.id)}
                   key={c.id}
                 >
-                  {c.render(c)}
+                  {c.render(c, { userInput: '' })}
                 </li>
               ))}
             </React.Fragment>
@@ -39,9 +39,7 @@ describe('ListSelector', () => {
       render: jest.fn((c: Command) => {
         return <div>{c.name}</div>;
       }),
-      actions: {
-        onExec: jest.fn(),
-      },
+      onExec: jest.fn(),
     };
     const cmd2: UnregisteredCommand = {
       id: 'test2',
@@ -50,9 +48,7 @@ describe('ListSelector', () => {
       render: jest.fn((c: Command) => {
         return <div>{c.name}</div>;
       }),
-      actions: {
-        onExec: jest.fn(),
-      },
+      onExec: jest.fn(),
     };
     const cmd3: UnregisteredCommand = {
       id: 'test3',
@@ -61,9 +57,7 @@ describe('ListSelector', () => {
       render: jest.fn((c: Command) => {
         return <div>{c.name}</div>;
       }),
-      actions: {
-        onExec: jest.fn(),
-      },
+      onExec: jest.fn(),
     };
 
     const onExec = jest.fn();

@@ -38,10 +38,8 @@ describe('polarbear', () => {
       id: 'c1',
       name: 'c1',
       keywords: ['c'],
-      actions: {
-        onExec: () => {
-          return AfterExec.CLEAR_INPUT;
-        },
+      onExec: () => {
+        return AfterExec.CLEAR_INPUT;
       },
       render: () => {
         return <div>c1</div>;
@@ -51,10 +49,8 @@ describe('polarbear', () => {
       id: 'd1',
       name: 'd1',
       keywords: ['d'],
-      actions: {
-        onExec: () => {
-          return AfterExec.CLEAR_INPUT;
-        },
+      onExec: () => {
+        return AfterExec.CLEAR_INPUT;
       },
       render: () => {
         return <div>d1</div>;
@@ -63,7 +59,7 @@ describe('polarbear', () => {
     karhu.addCommand(c1);
     karhu.addCommand(d1);
     // When
-    const { queryByTestId, getByTestId, rerender, debug } = render(
+    const { queryByTestId, getByTestId, rerender } = render(
       <KarhuProvider value={{ karhu }}>
         <DirtyPolarBear open={false} />
       </KarhuProvider>,
@@ -85,10 +81,10 @@ describe('polarbear', () => {
 
     // When
     const myInput: any = getByTestId('dpb').querySelector('input');
-    console.log('myInput: ', myInput);
+
     myInput.value = 'c';
     fireEvent.change(myInput);
 
-    debug();
+    //debug();
   });
 });

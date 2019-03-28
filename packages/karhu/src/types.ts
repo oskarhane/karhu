@@ -3,9 +3,8 @@ export interface UnregisteredCommand {
   name: string;
   contexts?: string[];
   keywords: string[];
-  onExec: (execProps: ExecProps) => AfterExec | undefined;
-  render: (c: Command, input: string) => JSX.Element | string;
-  boundRender?: (...any: any) => () => JSX.Element | string;
+  onExec: (execProps: ExecProps) => AfterExec | void;
+  render: (c: Command, renderProps: RenderProps) => JSX.Element | string;
 }
 
 export interface CommandMetadata {
@@ -15,6 +14,7 @@ export interface CommandMetadata {
 export interface Command extends UnregisteredCommand {
   id: string;
   meta: CommandMetadata;
+  boundRender: (...args: any) => JSX.Element | string;
 }
 
 export enum MatchClass {
@@ -47,10 +47,15 @@ export type EntryGraphCommandsSummary = {
   [key: string]: EntryGraphRecord;
 };
 
+export interface RenderProps {
+  userInput: string;
+  userArgs?: string[];
+}
+
 export interface ExecProps {
   enterContext: (id: string) => void;
   userInput: string;
-  userArgs?: string;
+  userArgs?: string[];
 }
 
 export enum AfterExec {
