@@ -16,10 +16,10 @@ export const MainElement = styled.div`
 `;
 
 export const MainInput = styled.input`
-  width: calc(100% - 30px);
-  height: 50px;
-  margin: 15px;
-  font-size: 40px;
+  width: calc(100% - 35px);
+  height: 45px;
+  margin: 14px 10px 10px 10px;
+  font-size: 35px;
   z-index: 9;
   outline: none;
 `;
