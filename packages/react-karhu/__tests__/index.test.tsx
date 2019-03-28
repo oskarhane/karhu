@@ -70,11 +70,9 @@ test('updates matching command list when prop input changes', () => {
     id: 'c1',
     name: 'first-command',
     keywords: ['first command'],
-    actions: {
-      onExec: jest.fn(() => {
-        return AfterExec.NOOP;
-      }),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command1.name;
     },
@@ -83,11 +81,9 @@ test('updates matching command list when prop input changes', () => {
     id: 'c2',
     name: 'second-command',
     keywords: ['second command'],
-    actions: {
-      onExec: jest.fn(() => {
-        return AfterExec.NOOP;
-      }),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command2.name;
     },
@@ -172,11 +168,9 @@ test('exec returns the entry graph', () => {
     id: commandId,
     name: 'first-command',
     keywords: ['first command'],
-    actions: {
-      onExec: jest.fn(() => {
-        return AfterExec.NOOP;
-      }),
-    },
+    onExec: jest.fn(() => {
+      return AfterExec.NOOP;
+    }),
     render: () => {
       return command1.name;
     },
