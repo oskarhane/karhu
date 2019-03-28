@@ -50,7 +50,12 @@ const commands: UnregisteredCommand[] = [
     },
     render: (c, { userArgs }) => {
       console.log('userArgs: ', userArgs);
-      return <div style={{ textAlign: 'left' }}>Log {userArgs} to the column (use &lt; to pipe args into command)</div>;
+      return (
+        <div style={{ textAlign: 'left' }}>
+          Log "{userArgs}"{' '}
+          <div style={{ fontSize: '10px', marginTop: '4px' }}>Using &lt; to pipe args into command</div>
+        </div>
+      );
     },
   },
 ];

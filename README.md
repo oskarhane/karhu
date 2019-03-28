@@ -89,7 +89,7 @@ function App() {
 
 Example UI with a cosy bear on top of a default React app.
 
-![bear](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/karhu-readme-LHFpVDuniH/karhu-readme.gif)
+![bear](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/kdemo1-zw1dp1drr4/kdemo1.gif)
 
 [build-badge]: https://img.shields.io/travis/oskarhane/karhu.svg?style=flat-square
 [build]: https://travis-ci.org/oskarhane/karhu
