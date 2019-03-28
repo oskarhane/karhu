@@ -36,10 +36,10 @@ function DirtyPolarBear(props: Props) {
   };
   const onExec = (id: string) => {
     const res = exec(id);
+    setInput(res.input);
     if (props.onExec) {
       props.onExec(res);
     }
-    setInput(res.input);
   };
   if (!props.open) {
     return null;

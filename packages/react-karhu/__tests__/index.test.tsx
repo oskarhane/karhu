@@ -94,13 +94,15 @@ test('updates matching command list when prop input changes', () => {
       {props.children}
     </div>
   );
+  let execFn: any;
   const tree = (props: any) => {
     return (
       <KarhuProvider value={{ karhu }}>
         <AddCommand command={command1} />
         <AddCommand command={command2} />
         <KarhuComponent input={props.input}>
-          {({ commandsList }) => {
+          {({ commandsList, exec }) => {
+            execFn = exec;
             return (
               <MyComp>
                 {commandsList.map(c => (
@@ -140,6 +142,15 @@ test('updates matching command list when prop input changes', () => {
   expect(getByTestId('command-list-item')).not.toBeNull();
   expect(queryByText('first-command')).toBeNull();
   expect(getByText('second-command')).not.toBeUndefined();
+
+  // When
+  act(() => {
+    execFn(command2.id);
+  });
+  rerender(tree({ input: '' }));
+
+  // Then
+  expect(queryByTestId('command-list-item')).toBeNull();
 
   // When
   rerender(tree({ input: 'comma' }));

@@ -193,7 +193,11 @@ export function normalizeEntryGraphCommandsCalls(graph: EntryGraph) {
 }
 
 export function findCommandsInEntryGraph(graph: EntryGraph, input: string = ''): ClassifiedMatch[] {
-  const letters: string[] = input.split('');
+  const [inputCommand] = extractCmdAndArgsFromInput(input);
+  const letters: string[] = inputCommand.split('');
+  if (!letters.length) {
+    return [];
+  }
   let traverseObj: EntryGraph = graph;
   for (let i = 0; i < letters.length; i += 1) {
     if (!traverseObj.next || !traverseObj.next[letters[i]]) {

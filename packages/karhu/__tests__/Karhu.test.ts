@@ -352,10 +352,12 @@ describe('Karhu', () => {
     karhu.runCommand(containsMatch.id);
     karhu.setInput(input);
     karhu.runCommand(containsMatch.id);
+    const emptyList = karhu.findMatchingCommands();
     karhu.setInput(input);
     list = karhu.findMatchingCommands();
 
     // Then
+    expect(emptyList).toHaveLength(0);
     expect(list.map(item => item.id)).toEqual([containsMatch.id, startsMatch.id]);
   });
   test('provided entry graph is used', () => {

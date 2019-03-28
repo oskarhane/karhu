@@ -134,7 +134,7 @@ describe('UIToggler', () => {
 
     // When
     // Call onExecFn
-    act(() => innerExecFn());
+    act(() => innerExecFn({ open: false }));
 
     // Then
     expect(shouldClose).toHaveBeenCalledWith(COMMAND_EXECUTION);

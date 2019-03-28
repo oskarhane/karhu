@@ -38,9 +38,9 @@ describe('polarbear', () => {
       id: 'c1',
       name: 'c1',
       keywords: ['c'],
-      onExec: () => {
+      onExec: jest.fn(() => {
         return AfterExec.CLEAR_INPUT;
-      },
+      }),
       render: () => {
         return <div>c1</div>;
       },
@@ -59,7 +59,7 @@ describe('polarbear', () => {
     karhu.addCommand(c1);
     karhu.addCommand(d1);
     // When
-    const { queryByTestId, getByTestId, rerender } = render(
+    const { queryByTestId, getByTestId, rerender, getByText, queryByText } = render(
       <KarhuProvider value={{ karhu }}>
         <DirtyPolarBear open={false} />
       </KarhuProvider>,
@@ -81,10 +81,18 @@ describe('polarbear', () => {
 
     // When
     const myInput: any = getByTestId('dpb').querySelector('input');
+    fireEvent.change(myInput, { target: { value: 'c' } });
 
-    myInput.value = 'c';
-    fireEvent.change(myInput);
+    // Then
+    expect(myInput.value).toEqual('c');
+    expect(getByText(c1.id)).toBeDefined();
 
-    //debug();
+    // When clicking
+    fireEvent.click(getByText(c1.id));
+
+    // Then
+    expect(c1.onExec).toHaveBeenCalledTimes(1);
+    expect(myInput.value).toEqual('');
+    expect(queryByText(c1.id)).toBeNull();
   });
 });

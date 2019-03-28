@@ -60,7 +60,7 @@ function MyKarhu() {
   const onExec = (result: CommandRunResult) => {
     const entryGraph: EntryGraph = result.entryGraph;
     console.log('entryGraph: ', entryGraph);
-    togglerProps.onExec();
+    togglerProps.onExec(result);
   };
   return (
     <React.Fragment>
