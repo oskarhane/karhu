@@ -1,4 +1,10 @@
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, sumCommandsRecursively } from '../src/utils';
+import {
+  classifyMatches,
+  updateEntryGraph,
+  findCommandsInEntryGraph,
+  sumCommandsRecursively,
+  extractCmdAndArgsFromInput,
+} from '../src/utils';
 import { Command, MatchClass, EntryGraph, ClassifiedMatch, EntryGraphRecord } from '../src/types';
 import Karhu from '../src';
 
@@ -392,5 +398,16 @@ describe('entryGraph', () => {
         };
       }),
     );
+  });
+});
+describe('extractCmdAndArgsFromInput', () => {
+  const tests = [
+    ['c < hello', ['c', 'hello']],
+    ['c ', ['c']],
+    ['c < first < second', ['c', 'first < second']],
+    ['< first', ['', 'first']],
+  ];
+  test.each(tests)('extractCmdAndArgsFromInput %s', (input, expected) => {
+    expect(extractCmdAndArgsFromInput(input)).toEqual(expected);
   });
 });

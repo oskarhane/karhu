@@ -10,7 +10,13 @@ import {
   AfterExec,
   CommandRunResult,
 } from './types';
-import { classifyMatches, updateEntryGraph, findCommandsInEntryGraph, matchesContext } from './utils';
+import {
+  classifyMatches,
+  updateEntryGraph,
+  findCommandsInEntryGraph,
+  matchesContext,
+  extractCmdAndArgsFromInput,
+} from './utils';
 
 export default class Karhu {
   static currentId: number = 0;
@@ -118,8 +124,15 @@ export default class Karhu {
       .map(c => {
         //@ts-ignore
         c.boundRender = (...args) => {
+          const [cmd, inputArgs] = extractCmdAndArgsFromInput(this.input);
+          let allArgs: any[] | undefined = undefined;
+          if (inputArgs || args.length) {
+            allArgs = [];
+            allArgs = inputArgs ? [inputArgs] : allArgs;
+            allArgs = args.length ? allArgs.concat(args) : allArgs;
+          }
           //@ts-ignore
-          return c.render(c, this.input, ...args);
+          return c.render(c, cmd, allArgs);
         };
         return c;
       });

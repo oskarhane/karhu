@@ -10,8 +10,20 @@ import {
 
 export const MATCH_ALL: string = '*';
 
+export const extractCmdAndArgsFromInput = (input: string) => {
+  const pos = input.indexOf('<');
+  if (pos < 0) {
+    return [input.trim()];
+  }
+  if (pos === 0) {
+    return ['', input.substring(1).trim()];
+  }
+  return [input.slice(0, pos).trim(), input.slice(pos + 1).trim()];
+};
+
 export function classifyMatches(commands: Command[], input: string = '', context?: string): ClassifiedMatches {
-  const normInputWords = input.toLowerCase().split(' ');
+  const [inputCommand] = extractCmdAndArgsFromInput(input);
+  const normInputWords = inputCommand.toLowerCase().split(' ');
   const out: ClassifiedMatches = commands.map(c => {
     let bestMatches: ClassifiedMatch[] = [];
     normInputWords.forEach(inputWord => {

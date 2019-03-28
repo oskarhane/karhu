@@ -457,10 +457,68 @@ describe('Commands render function', () => {
 
     // Then
     expect(c1Render).toHaveBeenCalledTimes(1);
-    expect(c1Render).toHaveBeenCalledWith(c1, input);
+    expect(c1Render).toHaveBeenCalledWith(c1, input, undefined);
     expect(c2Render).toHaveBeenCalledTimes(1);
-    expect(c2Render).toHaveBeenCalledWith(c2, input);
+    expect(c2Render).toHaveBeenCalledWith(c2, input, undefined);
     expect(extraArgsRender).toHaveBeenCalledTimes(1);
-    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, input, extraArg);
+    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, input, [extraArg]);
+  });
+});
+
+describe('input arguments using < operator', () => {
+  it("parses arguments from input, don't match on them and pass them to boundRender and onExec functions", () => {
+    // Given
+    const karhu = new Karhu();
+    const cmd = 'c';
+    const args = 'my args';
+    const input: string = `${cmd} < ${args}`; // Adding args using the < operator
+    const c1Render = jest.fn(() => 'c1');
+    const c2Render = jest.fn(() => 'c2');
+    const extraArgsRender = jest.fn(() => 'extraArgs');
+    const extraArg = 'yo';
+    let c1: Command = Karhu.createCommand({
+      id: 'c1',
+      name: 'c1',
+      keywords: ['c1'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: c1Render,
+    });
+    let c2: Command = Karhu.createCommand({
+      id: 'c2',
+      name: 'c2',
+      keywords: ['c2'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: c2Render,
+    });
+    let extraArgs: Command = Karhu.createCommand({
+      id: 'extraArgs',
+      name: 'extraArgs',
+      keywords: ['c3'],
+      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      render: extraArgsRender,
+    });
+
+    // When
+    c1 = karhu.addCommand(c1);
+    c2 = karhu.addCommand(c2);
+    extraArgs = karhu.addCommand(extraArgs);
+
+    karhu.setInput(input);
+    const matches = karhu.findMatchingCommands();
+
+    const c1Match = matches.find(c => c.id === c1.id);
+    c1Match && c1Match.boundRender && c1Match.boundRender();
+    const c2Match = matches.find(c => c.id === c2.id);
+    c2Match && c2Match.boundRender && c2Match.boundRender();
+    const extraArgsMatch = matches.find(c => c.id === extraArgs.id);
+    extraArgsMatch && extraArgsMatch.boundRender && extraArgsMatch.boundRender(extraArg);
+
+    // Then
+    expect(c1Render).toHaveBeenCalledTimes(1);
+    expect(c1Render).toHaveBeenCalledWith(c1, cmd, [args]);
+    expect(c2Render).toHaveBeenCalledTimes(1);
+    expect(c2Render).toHaveBeenCalledWith(c2, cmd, [args]);
+    expect(extraArgsRender).toHaveBeenCalledTimes(1);
+    expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, cmd, [args, extraArg]);
   });
 });
