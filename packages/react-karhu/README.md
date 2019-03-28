@@ -142,7 +142,7 @@ const karhu = new Karhu();
 const command = Karhu.createCommand({
   name: 'command',
   keywords: ['command'],
-  actions: { onExec: () => {} },
+  onExec: () => {},
   render: () => {},
 });
 

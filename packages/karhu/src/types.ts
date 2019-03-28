@@ -3,7 +3,7 @@ export interface UnregisteredCommand {
   name: string;
   contexts?: string[];
   keywords: string[];
-  actions: ActionsObject;
+  onExec: (execProps: ExecProps) => AfterExec | undefined;
   render: (c: Command, input: string) => JSX.Element | string;
   boundRender?: (...any: any) => () => JSX.Element | string;
 }
@@ -46,11 +46,6 @@ export interface EntryGraphRecord {
 export type EntryGraphCommandsSummary = {
   [key: string]: EntryGraphRecord;
 };
-
-export interface ActionsObject {
-  onExec: (execProps: ExecProps) => AfterExec | undefined;
-  onShow?: (id: string) => void;
-}
 
 export interface ExecProps {
   enterContext: (id: string) => void;

@@ -154,7 +154,7 @@ describe('classifyMatches', () => {
       name: `c-${commandNum++}`,
       keywords,
       contexts,
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
   }

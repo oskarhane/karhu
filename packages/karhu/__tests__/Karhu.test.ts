@@ -1,5 +1,5 @@
 import Karhu from '../src';
-import { UnregisteredCommand, Command, EntryGraph, ActionsObject, AfterExec } from '../src/types';
+import { UnregisteredCommand, Command, EntryGraph, AfterExec } from '../src/types';
 import { MATCH_ALL } from '../src/utils';
 
 describe('Karhu', () => {
@@ -15,7 +15,7 @@ describe('Karhu', () => {
     let myCommand: Command = Karhu.createCommand({
       name: 'test',
       keywords: ['test'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -25,10 +25,9 @@ describe('Karhu', () => {
   test('can add and remove commands', () => {
     // Given
     const id: string = 'my-id';
-    const actions: ActionsObject = { onExec: jest.fn() };
     const command: UnregisteredCommand = {
       id,
-      actions,
+      onExec: jest.fn(),
       name: 'hello',
       keywords: ['test word'],
       render: () => '',
@@ -49,24 +48,23 @@ describe('Karhu', () => {
   test('addCommand overwrites commands if the id exists', () => {
     // Given
     const id: string = 'my-id';
-    const actions: ActionsObject = { onExec: jest.fn() };
     const otherCommand: UnregisteredCommand = {
       id: 'otherID',
-      actions,
+      onExec: jest.fn(),
       name: 'hello',
       keywords: ['test word'],
       render: () => '',
     };
     const command: UnregisteredCommand = {
       id,
-      actions,
+      onExec: jest.fn(),
       name: 'hello',
       keywords: ['test word'],
       render: () => '',
     };
     const command2: UnregisteredCommand = {
       id,
-      actions,
+      onExec: jest.fn(),
       name: 'hello2',
       keywords: ['test word'],
       render: () => '',
@@ -105,28 +103,28 @@ describe('Karhu', () => {
       id: 'no',
       name: 'hello',
       keywords: ['open door', 'talk loud'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     const startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     const containsMatch: Command = Karhu.createCommand({
       id: 'contains',
       name: 'hello',
       keywords: ['LOYO', 'my man'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     const exactMatch: Command = Karhu.createCommand({
       id: 'exact',
       name: 'hello',
       keywords: ['LOYO', 'yo'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -151,14 +149,14 @@ describe('Karhu', () => {
       id: 'c1',
       name: 'hello',
       keywords: ['open'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     const c2: Command = Karhu.createCommand({
       id: 'c2',
       name: 'hello',
       keywords: ['open'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -190,18 +188,16 @@ describe('Karhu', () => {
       name: 'hello',
       contexts: [context], // only avaiable in certain context
       keywords: ['open'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     const c2: Command = Karhu.createCommand({
       id: 'c2',
       name: 'hello',
       keywords: ['open'],
-      actions: {
-        onExec: k => {
-          k.enterContext(context);
-          return AfterExec.NOOP;
-        },
+      onExec: k => {
+        k.enterContext(context);
+        return AfterExec.NOOP;
       }, // enter context on exec
       render: () => '',
     });
@@ -210,7 +206,7 @@ describe('Karhu', () => {
       name: 'hello',
       contexts: [MATCH_ALL], // Available in all contexts
       keywords: ['just open'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -266,14 +262,14 @@ describe('Karhu', () => {
       id: 'no',
       name: 'hello',
       keywords: ['open door', 'talk loud'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     let startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -284,8 +280,8 @@ describe('Karhu', () => {
     const { entryGraph: res } = karhu.runCommand(startsMatch.id);
 
     // Then
-    expect(startsMatch.actions.onExec).toHaveBeenCalledTimes(1);
-    expect(startsMatch.actions.onExec).toHaveBeenCalledWith(
+    expect(startsMatch.onExec).toHaveBeenCalledTimes(1);
+    expect(startsMatch.onExec).toHaveBeenCalledWith(
       expect.objectContaining({ userInput: input, userArgs: undefined, enterContext: expect.any(Function) }),
     );
     expect(startsMatch.meta.calls).toEqual(1);
@@ -309,14 +305,14 @@ describe('Karhu', () => {
       id: 'contains',
       name: 'hello',
       keywords: ['LOYO', 'my man'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
     let startsMatch: Command = Karhu.createCommand({
       id: 'starts',
       name: 'hello',
       keywords: ['YOLO', 'my man'],
-      actions: { onExec: jest.fn() },
+      onExec: jest.fn(),
       render: () => '',
     });
 
@@ -347,37 +343,6 @@ describe('Karhu', () => {
 
     // Then
     expect(list.map(item => item.id)).toEqual([containsMatch.id, startsMatch.id]);
-  });
-  test('onShow is called when a command is listed', () => {
-    // Given
-    const input: string = 'yo';
-    let noMatch: Command = Karhu.createCommand({
-      id: 'no',
-      name: 'hello',
-      keywords: ['open door', 'talk loud'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
-      render: () => '',
-    });
-    let startsMatch: Command = Karhu.createCommand({
-      id: 'starts',
-      name: 'hello',
-      keywords: ['YOLO', 'my man'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
-      render: () => '',
-    });
-
-    // When
-    noMatch = karhu.addCommand(noMatch);
-    startsMatch = karhu.addCommand(startsMatch);
-    karhu.setInput(input);
-    karhu.findMatchingCommands();
-
-    // Then
-    expect(noMatch.actions.onShow).toHaveBeenCalledTimes(0);
-    expect(startsMatch.actions.onShow).toHaveBeenCalledTimes(1);
-    expect(startsMatch.actions.onShow).toHaveBeenCalledWith(startsMatch.id);
-    expect(startsMatch.actions.onExec).toHaveBeenCalledTimes(0);
-    expect(startsMatch.meta.calls).toEqual(0);
   });
   test('provided entry graph is used', () => {
     // Given
@@ -430,21 +395,21 @@ describe('Commands render function', () => {
       id: 'c1',
       name: 'c1',
       keywords: ['c1'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: c1Render,
     });
     let c2: Command = Karhu.createCommand({
       id: 'c2',
       name: 'c2',
       keywords: ['c2'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: c2Render,
     });
     let extraArgs: Command = Karhu.createCommand({
       id: 'extraArgs',
       name: 'extraArgs',
       keywords: ['c3'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: extraArgsRender,
     });
 
@@ -487,21 +452,21 @@ describe('input arguments using < operator', () => {
       id: 'c1',
       name: 'c1',
       keywords: ['c1'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: c1Render,
     });
     let c2: Command = Karhu.createCommand({
       id: 'c2',
       name: 'c2',
       keywords: ['c2'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: c2Render,
     });
     let extraArgs: Command = Karhu.createCommand({
       id: 'extraArgs',
       name: 'extraArgs',
       keywords: ['c3'],
-      actions: { onExec: jest.fn(), onShow: jest.fn() },
+      onExec: jest.fn(),
       render: extraArgsRender,
     });
 
@@ -537,16 +502,16 @@ describe('input arguments using < operator', () => {
     karhu.setInput(input);
 
     // Then
-    expect(c1.actions.onExec).toHaveBeenCalledTimes(1);
-    expect(c1.actions.onExec).toHaveBeenCalledWith(
+    expect(c1.onExec).toHaveBeenCalledTimes(1);
+    expect(c1.onExec).toHaveBeenCalledWith(
       expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
     );
-    expect(c2.actions.onExec).toHaveBeenCalledTimes(1);
-    expect(c2.actions.onExec).toHaveBeenCalledWith(
+    expect(c2.onExec).toHaveBeenCalledTimes(1);
+    expect(c2.onExec).toHaveBeenCalledWith(
       expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
     );
-    expect(extraArgs.actions.onExec).toHaveBeenCalledTimes(1);
-    expect(extraArgs.actions.onExec).toHaveBeenCalledWith(
+    expect(extraArgs.onExec).toHaveBeenCalledTimes(1);
+    expect(extraArgs.onExec).toHaveBeenCalledWith(
       expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
     );
   });

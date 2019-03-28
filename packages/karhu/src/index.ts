@@ -136,11 +136,6 @@ export default class Karhu {
         };
         return c;
       });
-    commands.forEach(c => {
-      if (c.actions.onShow) {
-        c.actions.onShow(c.id);
-      }
-    });
     return commands;
   }
 
@@ -150,7 +145,7 @@ export default class Karhu {
       return { entryGraph: this.entryGraph, open: true, input: this.input };
     }
     const [userInput, userArgs] = extractCmdAndArgsFromInput(this.input);
-    const execResult = command.actions.onExec({ enterContext: this.enterContext.bind(this), userInput, userArgs });
+    const execResult = command.onExec({ enterContext: this.enterContext.bind(this), userInput, userArgs });
     this.entryGraph = updateEntryGraph(this.entryGraph, this.input, id, this.historyCallLimit);
     this._recordRunCommand(id);
     this._handleExecResult(execResult);
