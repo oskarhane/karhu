@@ -37,7 +37,7 @@ type Props = {
 // Returns
 type ChildrenProviderObject = {
   commandsList: Command[];
-  exec: (id: string) => EntryGraph;
+  exec: (id: string) => CommandRunResult;
 };
 ```
 
@@ -104,7 +104,7 @@ type Props = {
 
 type ChildrenProviderObject = {
   commandsList: Command[];
-  exec: (id: string) => EntryGraph;
+  exec: (id: string) => CommandRunResult;
 };
 ```
 
