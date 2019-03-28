@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 
 export const MainElement = styled.div`
+  margin: 0;
+  padding: 0;
   font-family: Arial, Helvetica, sans-serif;
   position: absolute;
   top: calc(50vh - 350px);
@@ -13,10 +15,11 @@ export const MainElement = styled.div`
   cursor: default;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.22), 0 2px 4px 0 rgba(0, 0, 0, 0.18);
   z-index: 9999999;
+  text-align: center;
 `;
 
 export const MainInput = styled.input`
-  width: calc(100% - 35px);
+  width: calc(100% - 25px);
   height: 45px;
   margin: 14px 10px 10px 10px;
   font-size: 35px;
@@ -25,6 +28,7 @@ export const MainInput = styled.input`
 `;
 
 export const CommandList = styled.ul`
+  text-align: left;
   padding: 0;
   margin: 0 0 4px 0;
   list-style: none;
