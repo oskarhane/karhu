@@ -149,22 +149,23 @@ export default class Karhu {
     if (!command) {
       return { entryGraph: this.entryGraph, open: true, input: this.input };
     }
-    const execResult = command.actions.onExec({ enterContext: this.enterContext.bind(this) });
+    const [userInput, userArgs] = extractCmdAndArgsFromInput(this.input);
+    const execResult = command.actions.onExec({ enterContext: this.enterContext.bind(this), userInput, userArgs });
     this.entryGraph = updateEntryGraph(this.entryGraph, this.input, id, this.historyCallLimit);
     this._recordRunCommand(id);
     this._handleExecResult(execResult);
     return { entryGraph: this.entryGraph, open: this.open, input: this.input };
   }
 
-  _handleExecResult(execResult: AfterExec): void {
-    if (execResult === AfterExec.CLEAR_INPUT) {
+  _handleExecResult(execResult: AfterExec | undefined): void {
+    if (!execResult || execResult === AfterExec.CLEAR_INPUT) {
       this.input = '';
     }
     this.open = this._shouldStayOpen(execResult);
   }
 
-  _shouldStayOpen(execResult: AfterExec): boolean {
-    if (execResult === AfterExec.CLOSE) {
+  _shouldStayOpen(execResult: AfterExec | undefined): boolean {
+    if (!execResult || execResult === AfterExec.CLOSE) {
       return false;
     }
     return true;

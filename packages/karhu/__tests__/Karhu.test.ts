@@ -170,6 +170,7 @@ describe('Karhu', () => {
     // Run command so it's in the entry graph
     karhu.setInput(input);
     karhu.runCommand(c2.id);
+    karhu.setInput(input);
 
     // Remove the command
     karhu.removeCommand(c2.id);
@@ -284,6 +285,9 @@ describe('Karhu', () => {
 
     // Then
     expect(startsMatch.actions.onExec).toHaveBeenCalledTimes(1);
+    expect(startsMatch.actions.onExec).toHaveBeenCalledWith(
+      expect.objectContaining({ userInput: input, userArgs: undefined, enterContext: expect.any(Function) }),
+    );
     expect(startsMatch.meta.calls).toEqual(1);
 
     expect(res).toEqual({
@@ -327,6 +331,7 @@ describe('Karhu', () => {
 
     // When
     karhu.runCommand(containsMatch.id);
+    karhu.setInput(input);
     list = karhu.findMatchingCommands();
 
     // Then
@@ -335,7 +340,9 @@ describe('Karhu', () => {
     // When
     // This time the score for history will pass starts
     karhu.runCommand(containsMatch.id);
+    karhu.setInput(input);
     karhu.runCommand(containsMatch.id);
+    karhu.setInput(input);
     list = karhu.findMatchingCommands();
 
     // Then
@@ -520,5 +527,27 @@ describe('input arguments using < operator', () => {
     expect(c2Render).toHaveBeenCalledWith(c2, cmd, [args]);
     expect(extraArgsRender).toHaveBeenCalledTimes(1);
     expect(extraArgsRender).toHaveBeenCalledWith(extraArgs, cmd, [args, extraArg]);
+
+    // When executing commands
+    karhu.runCommand(c1.id);
+    karhu.setInput(input);
+    karhu.runCommand(c2.id);
+    karhu.setInput(input);
+    karhu.runCommand(extraArgs.id);
+    karhu.setInput(input);
+
+    // Then
+    expect(c1.actions.onExec).toHaveBeenCalledTimes(1);
+    expect(c1.actions.onExec).toHaveBeenCalledWith(
+      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+    );
+    expect(c2.actions.onExec).toHaveBeenCalledTimes(1);
+    expect(c2.actions.onExec).toHaveBeenCalledWith(
+      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+    );
+    expect(extraArgs.actions.onExec).toHaveBeenCalledTimes(1);
+    expect(extraArgs.actions.onExec).toHaveBeenCalledWith(
+      expect.objectContaining({ userInput: cmd, userArgs: args, enterContext: expect.any(Function) }),
+    );
   });
 });

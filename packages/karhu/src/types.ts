@@ -48,12 +48,14 @@ export type EntryGraphCommandsSummary = {
 };
 
 export interface ActionsObject {
-  onExec: (execProps: ExecProps) => AfterExec;
+  onExec: (execProps: ExecProps) => AfterExec | undefined;
   onShow?: (id: string) => void;
 }
 
 export interface ExecProps {
   enterContext: (id: string) => void;
+  userInput: string;
+  userArgs?: string;
 }
 
 export enum AfterExec {
