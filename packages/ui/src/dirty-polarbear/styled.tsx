@@ -49,12 +49,13 @@ export const CommandListItem = styled.li`
   margin: 0;
   padding: 10px 20px 12px 20px;
   font-weight: 400;
-  font-size: 22px;
-  line-height: 16px;
+  font-size: 21px;
+  line-height: 17px;
   > * {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-height: 22px;
   }
   & .subtitle {
     font-size: 13px;
