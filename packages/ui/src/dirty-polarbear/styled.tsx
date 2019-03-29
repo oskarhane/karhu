@@ -51,6 +51,11 @@ export const CommandListItem = styled.li`
   font-weight: 400;
   font-size: 22px;
   line-height: 16px;
+  > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   & .subtitle {
     font-size: 13px;
     font-style: italic;
