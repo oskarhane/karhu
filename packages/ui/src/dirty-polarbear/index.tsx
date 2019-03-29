@@ -45,7 +45,7 @@ function DirtyPolarBear(props: Props) {
     return null;
   }
   return (
-    <MainElement data-testid="dpb" ref={props.setUIRef}>
+    <MainElement data-testid="dpb" className="dpb" ref={props.setUIRef}>
       <div>
         <Input value={input} onChange={inputChange} />
       </div>
